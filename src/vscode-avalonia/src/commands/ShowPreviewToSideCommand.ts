@@ -3,7 +3,7 @@ import { Command } from "../commandManager";
 import { AppConstants, logger } from "../util/Utilities";
 import { PreviewerData, ShowPreviewSettings } from "../models/previewerSettings";
 import { PreviewProcessManager } from "../previewProcessManager";
-import { WebPreviewerPanel } from "../panels/WebPreviwerPanel";
+import { WebPreviewerPanel } from "../panels/WebPreviewerPanel";
 
 export class ShowPreviewToSideCommand implements Command {
 	constructor(

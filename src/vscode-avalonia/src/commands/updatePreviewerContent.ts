@@ -3,7 +3,7 @@ import { Command } from "../commandManager";
 import { AppConstants } from "../util/Utilities";
 import * as util from "../util/Utilities";
 import { PreviewServer } from "../services/previewServer";
-import { WebPreviewerPanel } from "../panels/WebPreviwerPanel";
+import { WebPreviewerPanel } from "../panels/WebPreviewerPanel";
 
 export class UpdatePreviewerContext implements Command {
 	constructor(private readonly _context: vscode.ExtensionContext) {}
