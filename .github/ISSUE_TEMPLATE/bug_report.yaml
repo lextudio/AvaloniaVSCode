@@ -36,9 +36,9 @@ body:
     - type: textarea
       id: logs
       attributes:
-          label: Relevant log output
-          description: Please attach any relevant log output. You can find the logs in the Output panel (View -> Output) under the Avalonia for VS Code channel.
-          render: shell
+          label: Relevant log output from "Avalonia Client"
+          description: Please attach the extension's log output found in the Output panel (View -> Output) *under the Avalonia Client channel*. Click the "Open Log Output File" button to locate the extension's log file.
+          render: Shell
       validations:
           required: true
     - type: textarea
