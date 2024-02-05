@@ -14,7 +14,7 @@ export class PreviewerProcess implements Command {
 	id: string = util.AppConstants.previewProcessCommandId;
 
 	async execute(mainUri?: vscode.Uri): Promise<PreviewerData> {
-		util.logger.appendLine(`Command ${this.id}, ${mainUri}`);
+		util.logger.info(`Command ${this.id}, ${mainUri}`);
 		let result: PreviewerData = { file: mainUri! };
 		const previewParams = this._context.workspaceState.get<PreviewerParams>(util.AppConstants.previewerParamState);
 		if (previewParams && mainUri) {
@@ -38,7 +38,7 @@ export class PreviewerProcess implements Command {
 
 		const previewerData = this._processManager.getPreviewerData(fileData.targetPath);
 		if (previewerData) {
-			util.logger.appendLine(`Previewer process already started: ${previewerData.pid}`);
+			util.logger.info(`Previewer process already started: ${previewerData.pid}`);
 			return previewerData;
 		}
 
@@ -71,7 +71,7 @@ export class PreviewerProcess implements Command {
 			});
 
 			previewer.on("spawn", () => {
-				util.logger.appendLine(`Previewer process started with args: ${previewerArgs}`);
+				util.logger.info(`Previewer process started with args: ${previewerArgs}`);
 				let wsAddress = util.AppConstants.webSocketAddress(httpPort);
 				let previewerData = {
 					file: mainUri,
@@ -85,7 +85,7 @@ export class PreviewerProcess implements Command {
 			});
 
 			previewer.stdout.on("data", (data) => {
-				util.logger.appendLine(data.toString());
+				util.logger.info(data.toString());
 			});
 
 			previewer.stderr.on("data", (data) => {
@@ -94,7 +94,7 @@ export class PreviewerProcess implements Command {
 			});
 
 			previewer.on("close", (code) => {
-				util.logger.appendLine(`Previewer process exited with code ${code}`);
+				util.logger.info(`Previewer process exited with code ${code}`);
 			});
 		});
 	}

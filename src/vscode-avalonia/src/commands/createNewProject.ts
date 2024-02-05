@@ -81,7 +81,7 @@ export class CreateNewProject implements Command {
 			});
 			dotnet.on("close", (code) => {
 				if (code === 0) {
-					logger.appendLine(`Project ${projectName} created at ${folder}`);
+					logger.info(`Project ${projectName} created at ${folder}`);
 					resolve(projectPath);
 				} else {
 					reject("Failed to create project");

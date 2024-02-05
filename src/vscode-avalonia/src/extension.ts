@@ -81,7 +81,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			await context.globalState.update(migrationFlag, true);
 		}
 	} catch (e:any) {
-		logger.appendLine(`Settings migration failed: ${e?.message ?? e}`);
+		logger.error(`Settings migration failed: ${e?.message ?? e}`);
 	}
 
 	// Recommend XAML Styler extension if not installed and user hasn't suppressed recommendation
@@ -103,7 +103,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 		}
 	} catch (e) {
-		logger.appendLine(`Failed recommending XAML Styler: ${e}`);
+		logger.error(`Failed recommending XAML Styler: ${e}`);
 	}
 
 	// Track activation count and prompt for rating after threshold
@@ -134,7 +134,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 		}
 	} catch (e) {
-		logger.appendLine(`Failed handling rating prompt: ${e}`);
+		logger.error(`Failed handling rating prompt: ${e}`);
 	}
 
 	const commandManager = new CommandManager();
@@ -292,7 +292,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	}));
 
 	try {
-		logger.appendLine("Starting Avalonia Language Server...");
+		logger.info("Starting Avalonia Language Server...");
 		await languageClient.start();
 	} catch (error) {
 		logger.error(`Failed to start Avalonia Language Server. ${error}`);
@@ -303,13 +303,13 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async e => {
 		if (e.affectsConfiguration('avalonia.completion.buildConfigurationPreference') || e.affectsConfiguration('avalonia.buildConfigurationPreference') || e.affectsConfiguration('avalonia.trace.verbose') || e.affectsConfiguration('avalonia.verboseLogs')) {
 			try {
-				logger.appendLine('Restarting language server due to configuration change...');
+				logger.info('Restarting language server due to configuration change...');
 				await languageClient?.stop();
 				languageClient = await createLanguageService();
 				await languageClient.start();
-				logger.appendLine('Language server restarted with new configuration preference.');
+				logger.info('Language server restarted with new configuration preference.');
 			} catch (err) {
-				logger.appendLine(`Failed to restart language server: ${err}`);
+				logger.error(`Failed to restart language server: ${err}`);
 			}
 		}
 	}));
@@ -318,5 +318,5 @@ export async function activate(context: vscode.ExtensionContext) {
 // This method is called when your extension is deactivated
 export async function deactivate() {
 	await languageClient?.stop();
-	logger.appendLine("Language client stopped");
+	logger.info("Language client stopped");
 }

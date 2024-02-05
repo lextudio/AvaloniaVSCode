@@ -22,7 +22,7 @@ export async function buildSolutionModel(context: vscode.ExtensionContext, force
 	var { outputPath, isExist } = await isOutputExists(context);
 
 	if (!isExist || force) {
-		logger.appendLine(`[SolutionModel] parsing required (exists=${isExist}, force=${force})`);
+		logger.info(`[SolutionModel] parsing required (exists=${isExist}, force=${force})`);
 		await parseSolution(context);
 		return;
 	}
@@ -30,7 +30,7 @@ export async function buildSolutionModel(context: vscode.ExtensionContext, force
 	const fileContent = await fs.readFile(outputPath!, "utf-8");
 	const size = Buffer.byteLength(fileContent, "utf8");
 	const hash = crypto.createHash("sha256").update(fileContent).digest("hex").slice(0, 12);
-	logger.appendLine(`[SolutionModel] using cached JSON size=${size}B hash=${hash}`);
+	logger.info(`[SolutionModel] using cached JSON size=${size}B hash=${hash}`);
 	updateSolutionModel(context, fileContent);
 }
 
@@ -104,20 +104,20 @@ async function getSolutionFile(context?: vscode.ExtensionContext): Promise<strin
 			if (ext && ext.exports) {
 				// Try known export properties
 				if (ext.exports.CSharpExtensionExports?.workspace?.solutionPath) {
-					logger.appendLine(`[SolutionDiscovery] Found solution from CSharpExtensionExports: ${ext.exports.CSharpExtensionExports.workspace.solutionPath}`);
+					logger.info(`[SolutionDiscovery] Found solution from CSharpExtensionExports: ${ext.exports.CSharpExtensionExports.workspace.solutionPath}`);
 					return ext.exports.CSharpExtensionExports.workspace.solutionPath;
 				}
 				if (ext.exports.OmnisharpExtensionExports?.workspace?.solutionPath) {
-					logger.appendLine(`[SolutionDiscovery] Found solution from OmnisharpExtensionExports: ${ext.exports.OmnisharpExtensionExports.workspace.solutionPath}`);
+					logger.info(`[SolutionDiscovery] Found solution from OmnisharpExtensionExports: ${ext.exports.OmnisharpExtensionExports.workspace.solutionPath}`);
 					return ext.exports.OmnisharpExtensionExports.workspace.solutionPath;
 				}
 				if (ext.exports.workspace?.solutionPath) {
-					logger.appendLine(`[SolutionDiscovery] Found solution from workspace.solutionPath: ${ext.exports.workspace.solutionPath}`);
+					logger.info(`[SolutionDiscovery] Found solution from workspace.solutionPath: ${ext.exports.workspace.solutionPath}`);
 					return ext.exports.workspace.solutionPath;
 				}
 			}
 		} catch (err) {
-			logger.appendLine(`[SolutionDiscovery] Error accessing exports for ${extId}: ${err}`);
+			logger.error(`[SolutionDiscovery] Error accessing exports for ${extId}: ${err}`);
 		}
 	}
 
@@ -127,7 +127,7 @@ async function getSolutionFile(context?: vscode.ExtensionContext): Promise<strin
 	let foundFiles: vscode.Uri[] = [];
 	for (const pattern of patterns) {
 		const files = await vscode.workspace.findFiles(pattern, undefined, 50);
-		logger.appendLine(`[SolutionDiscovery] pattern=${pattern} count=${files.length}`);
+		logger.info(`[SolutionDiscovery] pattern=${pattern} count=${files.length}`);
 		if (files.length > 0) {
 			foundFiles.push(...files);
 		}
@@ -159,10 +159,10 @@ async function getSolutionFile(context?: vscode.ExtensionContext): Promise<strin
 				// User cancelled, fallback to first
 				selected = sorted[0].f.fsPath;
 			}
-			logger.appendLine(`[SolutionDiscovery] multipleMatches chosen=${selected} total=${sorted.length}`);
+			logger.info(`[SolutionDiscovery] multipleMatches chosen=${selected} total=${sorted.length}`);
 		} else {
 			selected = sorted[0].f.fsPath;
-			logger.appendLine(`[SolutionDiscovery] chosen=${selected}`);
+			logger.info(`[SolutionDiscovery] chosen=${selected}`);
 		}
 		await recordDiscovery(context, {
 			searchedPatterns: patterns,
@@ -175,7 +175,7 @@ async function getSolutionFile(context?: vscode.ExtensionContext): Promise<strin
 	}
 	// Fallback to workspace root
 	const root = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-	logger.appendLine(`[SolutionDiscovery] fallbackRoot=${root}`);
+	logger.info(`[SolutionDiscovery] fallbackRoot=${root}`);
 	await recordDiscovery(context, {
 		searchedPatterns: patterns,
 		matchedFiles: matched,
@@ -188,7 +188,7 @@ async function getSolutionFile(context?: vscode.ExtensionContext): Promise<strin
 
 async function isOutputExists(context?: vscode.ExtensionContext) {
 	const outputPath = await getSolutionDataFile(context);
-	logger.appendLine(`[EXT - INFO] Solution data path: ${outputPath}`);
+	logger.info(`[EXT - INFO] Solution data path: ${outputPath}`);
 	return { outputPath, isExist: fs.pathExistsSync(outputPath!) };
 }
 
@@ -221,7 +221,7 @@ async function parseSolution(context: vscode.ExtensionContext): Promise<string> 
 
 		previewer.on("spawn", () => {
 			jsonContent = "";
-			logger.appendLine(`parser process args: ${previewer.spawnargs}`);
+			logger.info(`parser process args: ${previewer.spawnargs}`);
 		});
 
 		previewer.stdout.on("data", (data) => {
@@ -236,7 +236,7 @@ async function parseSolution(context: vscode.ExtensionContext): Promise<string> 
 		});
 
 		previewer.on("close", (code) => {
-			logger.appendLine(`parser process exited with code ${code}`);
+			logger.info(`parser process exited with code ${code}`);
 
 			if (code === 0) {
 				try {

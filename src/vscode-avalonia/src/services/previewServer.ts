@@ -21,24 +21,24 @@ export class PreviewServer implements IPreviewServer {
 	 * Starts the preview server.
 	 */
 	public async start() {
-		logger.appendLine(`PreviewServer.start ${this._assemblyName}`);
+		logger.info(`PreviewServer.start ${this._assemblyName}`);
 
 		this._server.listen(this._port, this._host, () =>
-			logger.appendLine(`Preview server listening on port ${this._port}`)
+			logger.info(`Preview server listening on port ${this._port}`)
 		);
 		this._server.on("connection", this.handleSocketEvents.bind(this));
 	}
 
 	handleSocketEvents(socket: net.Socket) {
-		logger.appendLine(`Preview server connected on port ${socket.localPort}`);
+		logger.info(`Preview server connected on port ${socket.localPort}`);
 		this._socket = socket;
 
 		socket.on("data", (data) => {
 			this._onMessage.dispatch(this, data);
 			const msg = Messages.parseIncomingMessage(data);
-			logger.appendLine(JSON.stringify(msg.message));
+			logger.info(JSON.stringify(msg.message));
 			if (msg.type === Messages.startDesignerSessionMessageId) {
-				logger.appendLine("Start designer session message received.");
+				logger.info("Start designer session message received.");
 				const pixelFormat = Messages.clientSupportedPixelFormatsMessage();
 				socket.write(pixelFormat);
 
@@ -49,7 +49,7 @@ export class PreviewServer implements IPreviewServer {
 		});
 
 		socket.on("close", () => {
-			logger.appendLine(`Preview server closed for ${this._assemblyName}`);
+			logger.info(`Preview server closed for ${this._assemblyName}`);
 			this._server.close();
 			this._socket?.destroy();
 		});
@@ -64,7 +64,7 @@ export class PreviewServer implements IPreviewServer {
 	 * Stops the preview server.
 	 */
 	public stop() {
-		logger.appendLine(`PreviewServer.stop ${this._assemblyName}`);
+		logger.info(`PreviewServer.stop ${this._assemblyName}`);
 		this._server.close();
 	}
 
@@ -116,7 +116,7 @@ export class PreviewServer implements IPreviewServer {
 	}
 
 	sendData(data: Buffer): void {
-		logger.appendLine("In PreviewServer.sendData");
+		logger.info("In PreviewServer.sendData");
 	}
 
 	public get onMessage(): IEvent<IPreviewServer, Buffer> {

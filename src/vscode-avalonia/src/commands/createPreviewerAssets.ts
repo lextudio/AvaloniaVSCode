@@ -41,7 +41,7 @@ export class CreatePreviewerAssets implements Command {
 					//TODO use this for solution storage
 					this._context.workspaceState.update(AppConstants.previewerParamState, output);
 
-					logger.appendLine(`Previewer assets generated at ${output.previewerPath}`);
+					logger.info(`Previewer assets generated at ${output.previewerPath}`);
 					if (output.previewerPath.trim() === '') {
 						// if previewer asset generation failed, yank UI focus to our logger channel.
 						logger.error('Previewer path is empty');
@@ -66,11 +66,11 @@ export class CreatePreviewerAssets implements Command {
 				if (emitBinlog) {
 					buildArgs.splice(2, 0, "-bl:msbuild.binlog");
 				}
-				logger.appendLine(`[diagnostics] build cwd: ${projectDir}`);
-				logger.appendLine(`[diagnostics] dotnet ${buildArgs.join(" ")}`);
+				logger.info(`[diagnostics] build cwd: ${projectDir}`);
+				logger.info(`[diagnostics] dotnet ${buildArgs.join(" ")}`);
 				const dotnet = spawn("dotnet", buildArgs, { cwd: projectDir });
-				dotnet.stderr.on("data", (data) => logger.appendLine(`[ERROR]  dotnet build error: ${data}`));
-				dotnet.stdout.on("data", (data) => logger.appendLine(`${data}`));
+				dotnet.stderr.on("data", (data) => logger.error(`[ERROR]  dotnet build error: ${data}`));
+				dotnet.stdout.on("data", (data) => logger.info(`${data}`));
 				dotnet.on("close", async (code) => {
 					if (code === 0) {
 						if (!project.designerHostPath || project.designerHostPath === "") {
@@ -91,20 +91,20 @@ export class CreatePreviewerAssets implements Command {
 							projectDepsFilePath: prj.depsFilePath,
 						});
 					} else {
-						logger.appendLine(`[ERROR] dotnet build exited with code ${code}`);
+						logger.error(`[ERROR] dotnet build exited with code ${code}`);
 						reject(`dotnet build exited with code ${code}`);
 					}
 				});
 			};
 			if (runInfo) {
-				logger.appendLine("[diagnostics] Running 'dotnet --info' before build...");
+				logger.info("[diagnostics] Running 'dotnet --info' before build...");
 				const info = spawn("dotnet", ["--info"]);
 				let infoOutput = "";
 				info.stdout.on("data", d => { infoOutput += d.toString(); });
 				info.stderr.on("data", d => { infoOutput += d.toString(); });
 				info.on("close", () => {
-					infoOutput.split(/\r?\n/).forEach(line => line && logger.appendLine(`[dotnet-info] ${line}`));
-					logger.appendLine("[diagnostics] dotnet --info completed. Starting project build...");
+					infoOutput.split(/\r?\n/).forEach(line => line && logger.info(`[dotnet-info] ${line}`));
+					logger.info("[diagnostics] dotnet --info completed. Starting project build...");
 					startBuild();
 				});
 			} else {

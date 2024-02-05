@@ -4,7 +4,7 @@ import { getDotnetRuntimePath, getLanguageServerPath as getAvaloniaServerPath } 
 import { avaloniaLanguageId, logger } from "./util/Utilities";
 
 export async function createLanguageService(): Promise<lsp.LanguageClient> {
-	logger.appendLine("Creating language service");
+	logger.info("Creating language service");
 
 	const serverOptions = await getServerStartupOptions();
 	let outputChannel = logger;
@@ -48,8 +48,8 @@ async function getServerStartupOptions(): Promise<lsp.ServerOptions> {
 	const serverPath = getAvaloniaServerPath();
 
 	// Log resolved paths for easier troubleshooting
-	logger.appendLine(`[Avalonia LSP] dotnet: ${dotnetCommandPath}`);
-	logger.appendLine(`[Avalonia LSP] Language server DLL: ${serverPath}`);
+	logger.info(`[Avalonia LSP] dotnet: ${dotnetCommandPath}`);
+	logger.info(`[Avalonia LSP] Language server DLL: ${serverPath}`);
 
 	const executable = {
 		command: dotnetCommandPath,
