@@ -51,7 +51,7 @@ export function getSolutionModel(context: vscode.ExtensionContext): sln.Solution
 export async function getSolutionDataFile(context?: vscode.ExtensionContext) {
 	const slnFile = await getSolutionFile(context);
 	if (!slnFile) {
-		logger.appendLine("Could not find solution file.");
+		logger.error("Could not find solution file.");
 		return;
 	}
 
@@ -231,7 +231,7 @@ async function parseSolution(context: vscode.ExtensionContext): Promise<string> 
 		let errorData = "";
 
 		previewer.stderr.on("data", (data) => {
-			logger.appendLine(data.toString());
+			logger.error(data.toString());
 			errorData += data.toString();
 		});
 

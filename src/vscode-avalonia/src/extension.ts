@@ -295,7 +295,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		logger.appendLine("Starting Avalonia Language Server...");
 		await languageClient.start();
 	} catch (error) {
-		logger.appendLine(`Failed to start Avalonia Language Server. ${error}`);
+		logger.error(`Failed to start Avalonia Language Server. ${error}`);
+		logger.show();
 	}
 
 	// React to configuration changes for build configuration preference

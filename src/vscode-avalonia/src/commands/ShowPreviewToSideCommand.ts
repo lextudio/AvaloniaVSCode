@@ -54,8 +54,13 @@ export function showPreview(
 	processManager: PreviewProcessManager
 ) {
 	let uri = previewerData.file;
+	if (uri) {
+		logger.info(`Show Preview to side: ${uri.toString()}`);
+	}
+	else {
+		logger.error('no mainUri');
+	}
 
-	logger.appendLine(`Show Preview to side: ${uri?.toString() ?? "no mainUri"}`);
 	if (!(uri instanceof vscode.Uri) && vscode.window.activeTextEditor) {
 		uri = vscode.window.activeTextEditor.document.uri;
 	}

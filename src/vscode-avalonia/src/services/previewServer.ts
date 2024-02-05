@@ -55,7 +55,8 @@ export class PreviewServer implements IPreviewServer {
 		});
 
 		socket.on("error", (error) => {
-			logger.appendLine(`Preview server error: ${error}`);
+			logger.error(`Preview server error: ${error}`);
+			logger.show();
 		});
 	}
 

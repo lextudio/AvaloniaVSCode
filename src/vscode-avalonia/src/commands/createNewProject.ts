@@ -77,6 +77,7 @@ export class CreateNewProject implements Command {
 			const dotnet = spawn("dotnet", ["new", template, "-n", projectName, "-o", projectPath]);
 			dotnet.stderr.on("data", (data) => {
 				logger.error(data.toString());
+				logger.show();
 			});
 			dotnet.on("close", (code) => {
 				if (code === 0) {

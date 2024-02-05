@@ -13,7 +13,8 @@ export class CreatePreviewerAssets implements Command {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	async execute(args: { triggerCodeComplete: boolean } | undefined): Promise<void> {
 		if (!vscode.workspace.workspaceFolders) {
-			logger.appendLine("No active workspace.");
+			logger.error("No active workspace.");
+			logger.show();
 			return;
 		}
 
@@ -23,7 +24,8 @@ export class CreatePreviewerAssets implements Command {
 		const project = getExecutableProject(solutionData!);
 
 		if (!project) {
-			logger.appendLine("No executable project found.");
+			logger.error("No WinExe project found.");
+			logger.show();
 			return;
 		}
 
@@ -40,6 +42,11 @@ export class CreatePreviewerAssets implements Command {
 					this._context.workspaceState.update(AppConstants.previewerParamState, output);
 
 					logger.appendLine(`Previewer assets generated at ${output.previewerPath}`);
+					if (output.previewerPath.trim() === '') {
+						// if previewer asset generation failed, yank UI focus to our logger channel.
+						logger.error('Previewer path is empty');
+						logger.show();
+					}
 				}
 			);
 		}
