@@ -61,12 +61,11 @@ export function showPreview(
 		logger.error('no mainUri');
 	}
 
-	if (!(uri instanceof vscode.Uri) && vscode.window.activeTextEditor) {
-		uri = vscode.window.activeTextEditor.document.uri;
-	}
-
-	if (!(uri instanceof vscode.Uri) && !vscode.window.activeTextEditor) {
-		return;
+	if (!(uri instanceof vscode.Uri)) {
+		if (vscode.window.activeTextEditor) {
+			uri = vscode.window.activeTextEditor.document.uri;
+		}
+		else { return; }
 	}
 
 	if (uri) {
