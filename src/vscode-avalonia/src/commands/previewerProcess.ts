@@ -9,14 +9,15 @@ import * as fs from "fs";
 import { PreviewerData } from "../models/previewerSettings";
 import { PreviewProcessManager } from "../previewProcessManager";
 import { PreviewServer } from "../services/previewServer";
+import AppConstants from "../util/Constants";
 
 export class PreviewerProcess implements Command {
-	id: string = util.AppConstants.previewProcessCommandId;
+	id: string = AppConstants.previewProcessCommandId;
 
 	async execute(mainUri?: vscode.Uri): Promise<PreviewerData> {
 		util.logger.info(`Command ${this.id}, ${mainUri}`);
 		let result: PreviewerData = { file: mainUri! };
-		const previewParams = this._context.workspaceState.get<PreviewerParams>(util.AppConstants.previewerParamState);
+		const previewParams = this._context.workspaceState.get<PreviewerParams>(AppConstants.previewerParamState);
 		if (previewParams && mainUri) {
 			result = await this.startPreviewerProcess(previewParams, mainUri);
 		}
@@ -44,7 +45,7 @@ export class PreviewerProcess implements Command {
 
 		const httpPort = await portfinder.getPortPromise();
 		const bsonPort = httpPort + 1; //await portfinder.getPortPromise({ startPort: 9000 });
-		const htmlUrl = `${util.AppConstants.htmlUrl}:${httpPort}`;
+		const htmlUrl = `${AppConstants.htmlUrl}:${httpPort}`;
 		const assemblyPath = fileData.targetPath;
 
 		const server = PreviewServer.getInstance(assemblyPath, bsonPort);
@@ -58,7 +59,7 @@ export class PreviewerProcess implements Command {
 			`--runtimeconfig "${previewParams.projectRuntimeConfigFilePath}"`,
 			`--depsfile "${previewParams.projectDepsFilePath}" "${previewParams.previewerPath}"`,
 			"--method avalonia-remote",
-			`--transport tcp-bson://${util.AppConstants.localhost}:${bsonPort}/`,
+			`--transport tcp-bson://${AppConstants.localhost}:${bsonPort}/`,
 			"--method html",
 			`--html-url ${htmlUrl}`,
 			previewParams.targetPath.putInQuotes(),
@@ -72,7 +73,7 @@ export class PreviewerProcess implements Command {
 
 			previewer.on("spawn", () => {
 				util.logger.info(`Previewer process started with args: ${previewerArgs}`);
-				let wsAddress = util.AppConstants.webSocketAddress(httpPort);
+				let wsAddress = AppConstants.webSocketAddress(httpPort);
 				let previewerData = {
 					file: mainUri,
 					previewerUrl: htmlUrl,

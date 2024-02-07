@@ -8,6 +8,7 @@
 			"DOM"
 		],
 		"sourceMap": true,
+		"resolveJsonModule": true,
 		"rootDir": "src",
 		"strict": true,
 		"skipLibCheck": true,

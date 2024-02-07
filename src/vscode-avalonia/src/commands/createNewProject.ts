@@ -1,9 +1,10 @@
 import { Command } from "../commandManager";
-import { AppConstants, logger } from "../util/Utilities";
+import { logger } from "../util/Utilities";
 import * as vscode from "vscode";
 import { spawn } from "child_process";
 import path = require("path");
 import { getDotnetRuntimePath } from "../runtimeManager";
+import AppConstants from "../util/Constants";
 
 export class CreateNewProject implements Command {
 	public readonly id = AppConstants.newProjectCommandId;

@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
 import path = require("path");
-import { AppConstants, logger } from "../util/Utilities";
+import { logger } from "../util/Utilities";
 import { PreviewProcessManager } from "../previewProcessManager";
+import AppConstants from "../util/Constants";
 
 export class WebPreviewerPanel {
   public static currentPanel: WebPreviewerPanel | undefined;

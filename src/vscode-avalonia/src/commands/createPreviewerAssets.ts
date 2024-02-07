@@ -1,12 +1,13 @@
 import * as vscode from "vscode";
 import { Command } from "../commandManager";
-import { logger, AppConstants, getExecutableProject } from "../util/Utilities";
+import { logger, getExecutableProject } from "../util/Utilities";
 import * as fs from "fs-extra";
 import * as path from "path";
 import { spawn } from "child_process";
 import { PreviewerParams } from "../models/PreviewerParams";
 import * as sln from "../services/solutionParser";
 import * as sm from "../models/solutionModel";
+import AppConstants from "../util/Constants";
 
 export class CreatePreviewerAssets implements Command {
 	public readonly id = AppConstants.previewerAssetsCommand;

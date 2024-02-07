@@ -7,8 +7,9 @@ import { createLanguageService } from "./client";
 import { registerAvaloniaCommands } from "./commands";
 import { CommandManager } from "./commandManager";
 import * as util from "./util/Utilities";
-import { AppConstants, logger } from "./util/Utilities";
+import { logger } from "./util/Utilities";
 import { getLastDiscoveryMeta, buildSolutionModel, getSolutionDataFile, getSolutionModel } from "./services/solutionParser";
+import AppConstants from "./util/Constants";
 
 let languageClient: lsp.LanguageClient | null = null;
 

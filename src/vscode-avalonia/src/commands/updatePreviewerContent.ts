@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { Command } from "../commandManager";
-import { AppConstants } from "../util/Utilities";
+import { AppConstants } from "../util/Constants";
 import * as util from "../util/Utilities";
 import { PreviewServer } from "../services/previewServer";
 import { WebPreviewerPanel } from "../panels/WebPreviewerPanel";

@@ -9,8 +9,9 @@ import * as vscode from "vscode";
 import * as sln from "../models/solutionModel";
 import { spawn } from "child_process";
 
-import { AppConstants, logger } from "../util/Utilities";
+import { logger } from "../util/Utilities";
 import { getDotnetRuntimePath } from "../runtimeManager";
+import AppConstants from "../util/Constants";
 
 /**
  * Builds the solution model by parsing the solution file and updating the workspace state.

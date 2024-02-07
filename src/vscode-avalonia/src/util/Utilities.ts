@@ -73,35 +73,3 @@ Array.prototype.getValue = function (this: string[], property: string): string {
 String.prototype.putInQuotes = function (this: string): string {
 	return `"${this}"`;
 };
-
-/**
- * Various app constants
- */
-export class AppConstants {
-	static readonly insertPropertyCommandId = "avalonia.InsertProperty";
-	static readonly previewerParamState = "previewerParams";
-	static readonly previewProcessCommandId = "avalonia.previewProcess";
-	static readonly localhost = "127.0.0.1";
-	static readonly htmlUrl = `http://${AppConstants.localhost}`;
-
-	static webSocketAddress = (port: number) => `ws://${AppConstants.localhost}:${port}/ws`;
-
-	static readonly updateAssetsMessages: "updateAssetsMessage";
-	static readonly showPreviewMessage: "showPreviewMessage";
-
-	static readonly showPreviewToSideCommand = "avalonia.showPreviewToSide";
-	static readonly previewerAssetsCommand = "avalonia.createPreviewerAssets";
-
-	// Must match WebPreviewerPanel.viewType so tab lookup works
-	static readonly previewerPanelViewType = "webPreviewer";
-	static readonly winExe = "WinExe";
-
-	static readonly solutionData = "avalonia.solutionData";
-	static readonly solutionDiscoveryMeta = "avalonia.solutionDiscoveryMeta";
-
-	static readonly updatePreviewerContent = "avalonia.updatePreviewerContext";
-
-	static readonly extensionId = "lextudio.vscode-axaml";
-
-	static readonly newProjectCommandId = "avalonia.newProject";
-}

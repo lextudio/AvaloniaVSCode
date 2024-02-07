@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { AppConstants, logger } from "./util/Utilities";
+import { logger } from "./util/Utilities";
+import AppConstants from "./util/Constants";
 
 /**
  * The version of the .NET runtime to acquire.
