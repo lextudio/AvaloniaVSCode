@@ -2,7 +2,9 @@ import path = require("path");
 import * as vscode from "vscode";
 import * as sm from "../models/solutionModel";
 import { getSolutionModel } from "../services/solutionParser";
+import AppConstants from "./Constants";
 
+// TODO:move const strings to Constants
 export const avaloniaFileExtension = "axaml";
 export const avaloniaLanguageId = "axaml";
 export const logger = vscode.window.createOutputChannel("Avalonia Client", { log: true });
@@ -12,8 +14,10 @@ export const logger = vscode.window.createOutputChannel("Avalonia Client", { log
  * @param document vscode TextDocument
  * @returns `true` if it's an Avalonia file, `false` otherwise
  */
+const axamlLang = AppConstants._contributes.languages.find((v: any) => v.id.toLowerCase() === avaloniaLanguageId);
 export function isAvaloniaFile(document: vscode.TextDocument): boolean {
-	return path.extname(document.fileName) === `.${avaloniaFileExtension}`;
+	// axamlLang will never be null | undefined!
+	return axamlLang!.extensions.some((dotExt: any) => path.extname(document.fileName) === dotExt);
 }
 
 /**
