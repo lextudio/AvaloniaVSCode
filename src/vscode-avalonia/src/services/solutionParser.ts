@@ -4,6 +4,7 @@ import * as path from "path";
 import * as crypto from "crypto";
 
 import * as vscode from "vscode";
+//import "vscode"; // required for 'using' statement. Type 'Disposable' must be in global namespace.
 
 import * as sln from "../models/solutionModel";
 import { spawn } from "child_process";
@@ -91,32 +92,88 @@ async function recordDiscovery(context: vscode.ExtensionContext | undefined, met
 }
 
 async function getSolutionFile(context?: vscode.ExtensionContext): Promise<string | undefined> {
-	const patterns = ["**/*.slnx", "**/*.sln"]; // order matters
+	// Try getting solution file from extension exports first
+	const extensionIds = [
+		"ms-dotnettools.csharp",
+		"Ionide.Ionide-fsharp",
+		"ms-dotnettools.csdevkit"
+	];
+	for (const extId of extensionIds) {
+		try {
+			const ext = vscode.extensions.getExtension(extId);
+			if (ext && ext.exports) {
+				// Try known export properties
+				if (ext.exports.CSharpExtensionExports?.workspace?.solutionPath) {
+					logger.appendLine(`[SolutionDiscovery] Found solution from CSharpExtensionExports: ${ext.exports.CSharpExtensionExports.workspace.solutionPath}`);
+					return ext.exports.CSharpExtensionExports.workspace.solutionPath;
+				}
+				if (ext.exports.OmnisharpExtensionExports?.workspace?.solutionPath) {
+					logger.appendLine(`[SolutionDiscovery] Found solution from OmnisharpExtensionExports: ${ext.exports.OmnisharpExtensionExports.workspace.solutionPath}`);
+					return ext.exports.OmnisharpExtensionExports.workspace.solutionPath;
+				}
+				if (ext.exports.workspace?.solutionPath) {
+					logger.appendLine(`[SolutionDiscovery] Found solution from workspace.solutionPath: ${ext.exports.workspace.solutionPath}`);
+					return ext.exports.workspace.solutionPath;
+				}
+			}
+		} catch (err) {
+			logger.appendLine(`[SolutionDiscovery] Error accessing exports for ${extId}: ${err}`);
+		}
+	}
+
+	// Fallback to file search
+	const patterns = ["**/*.slnx", "**/*.sln"];
 	const matched: string[] = [];
+	let foundFiles: vscode.Uri[] = [];
 	for (const pattern of patterns) {
 		const files = await vscode.workspace.findFiles(pattern, undefined, 50);
 		logger.appendLine(`[SolutionDiscovery] pattern=${pattern} count=${files.length}`);
 		if (files.length > 0) {
-			const sorted = files
-				.map(f => ({ f, depth: f.fsPath.split(/[\\\/]/).length }))
-				.sort((a, b) => a.depth - b.depth || a.f.fsPath.localeCompare(b.f.fsPath));
-			const chosen = sorted[0].f.fsPath;
-			matched.push(...files.map(f => f.fsPath));
-			if (files.length > 1) {
-				logger.appendLine(`[SolutionDiscovery] multipleMatches chosen=${chosen} total=${files.length}`);
-			} else {
-				logger.appendLine(`[SolutionDiscovery] chosen=${chosen}`);
-			}
-			await recordDiscovery(context, {
-				searchedPatterns: patterns,
-				matchedFiles: matched,
-				selectedFile: chosen,
-				fallbackToRoot: false,
-				timestamp: new Date().toISOString()
-			});
-			return chosen;
+			foundFiles.push(...files);
 		}
 	}
+	let selected: string | undefined;
+	if (foundFiles.length > 0) {
+		// Sort by depth, then alphabetically
+		const sorted = foundFiles
+			.map(f => ({ f, depth: f.fsPath.split(/[\\\/]/).length }))
+			.sort((a, b) => a.depth - b.depth || a.f.fsPath.localeCompare(b.f.fsPath));
+		matched.push(...foundFiles.map(f => f.fsPath));
+		if (sorted.length > 1) {
+			// Prompt user to pick
+			const tokenSource = new (class extends vscode.CancellationTokenSource {})();
+			try {
+				selected = await vscode.window.showQuickPick(
+					sorted.map(x => x.f.fsPath),
+					{
+						title: 'Choose Solution File',
+						canPickMany: false
+					} as vscode.QuickPickOptions,
+					tokenSource.token
+				);
+			} catch {}
+			finally {
+				tokenSource.dispose();
+			}
+			if (!selected) {
+				// User cancelled, fallback to first
+				selected = sorted[0].f.fsPath;
+			}
+			logger.appendLine(`[SolutionDiscovery] multipleMatches chosen=${selected} total=${sorted.length}`);
+		} else {
+			selected = sorted[0].f.fsPath;
+			logger.appendLine(`[SolutionDiscovery] chosen=${selected}`);
+		}
+		await recordDiscovery(context, {
+			searchedPatterns: patterns,
+			matchedFiles: matched,
+			selectedFile: selected,
+			fallbackToRoot: false,
+			timestamp: new Date().toISOString()
+		});
+		return selected;
+	}
+	// Fallback to workspace root
 	const root = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
 	logger.appendLine(`[SolutionDiscovery] fallbackRoot=${root}`);
 	await recordDiscovery(context, {
