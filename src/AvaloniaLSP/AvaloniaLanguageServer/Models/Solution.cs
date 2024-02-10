@@ -13,10 +13,13 @@ namespace AvaloniaLanguageServer.Models
         [JsonPropertyName("files")]
         public ProjectFile[] Files { get; set; } = Array.Empty<ProjectFile>();
 
+        public const string OutputTypeWinExe = "WinExe";
+        public const string OutputTypeExe = "Exe";
+
         public Project? GetExecutableProject()
         {
-            bool IsWinExe(Project p) => string.Equals(p.NormalizedOutputType ?? p.OutputType, "WinExe", StringComparison.OrdinalIgnoreCase);
-            bool IsExe(Project p) => string.Equals(p.NormalizedOutputType ?? p.OutputType, "Exe", StringComparison.OrdinalIgnoreCase);
+            bool IsWinExe(Project p) => string.Equals(p.NormalizedOutputType ?? p.OutputType, OutputTypeWinExe, StringComparison.OrdinalIgnoreCase);
+            bool IsExe(Project p) => string.Equals(p.NormalizedOutputType ?? p.OutputType, OutputTypeExe, StringComparison.OrdinalIgnoreCase);
             var exe = Projects.FirstOrDefault(IsWinExe)
                       ?? Projects.FirstOrDefault(IsExe)
                       ?? Projects.FirstOrDefault(p => !string.IsNullOrWhiteSpace(p.TargetPath));
