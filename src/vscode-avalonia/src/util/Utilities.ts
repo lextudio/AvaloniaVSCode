@@ -14,10 +14,13 @@ export const logger = vscode.window.createOutputChannel("Avalonia Client", { log
  * @param document vscode TextDocument
  * @returns `true` if it's an Avalonia file, `false` otherwise
  */
-const axamlLang = AppConstants._contributes.languages.find((v: any) => v.id.toLowerCase() === avaloniaLanguageId);
+const axamlLang = AppConstants._contributes?.languages.find((v: any) => v.id.toLowerCase() === avaloniaLanguageId);
 export function isAvaloniaFile(document: vscode.TextDocument): boolean {
 	// axamlLang will never be null | undefined!
-	return axamlLang!.extensions.some((dotExt: any) => path.extname(document.fileName) === dotExt);
+	if (!axamlLang) {
+		throw new Error("Variable 'axamlLang' remained undefined after the extension loaded!");
+	}
+	return axamlLang.extensions.some((dotExt: any) => path.extname(document.fileName) === dotExt);
 }
 
 /**
