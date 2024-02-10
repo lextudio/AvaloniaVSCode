@@ -6,7 +6,7 @@ namespace AvaloniaLanguageServer.Services;
 public class BufferService
 {
     private readonly ConcurrentDictionary<DocumentUri, Buffer> _buffers = new();
-    
+
     public void Add(DocumentUri key, string text)
     {
         _buffers.TryAdd(key, new Buffer(text));
@@ -17,6 +17,15 @@ public class BufferService
         _buffers.TryRemove(key, out _);
     }
 
+    /* 
+    todo: refactor: include or remove trailing 'word' under the cursor. Remove the trailing chars or move the cursor to the end of the word before getting completions.
+    Currently, the completion of a 'word' is inserted directly after the cursor.
+    If the cursor is not at the end of a word, then the completion is inserted
+    inside of the word. This leads to issues like
+     - fragment: `using:System.`
+     - completion: `using:System.IO`
+     - erroneous result: `using:System.using:System.IO`
+    */
     public string? GetTextTillPosition(DocumentUri key, Position position)
     {
         return _buffers[key].GetTextTillLine(position);
@@ -32,14 +41,14 @@ public class BufferService
         var buffer = _buffers[key];
         _buffers.TryUpdate(key, new Buffer(text), buffer);
     }
-    
+
     public void ApplyIncrementalChange(DocumentUri key, Range range, string text)
     {
         var buffer = _buffers[key];
         var newText = Splice(buffer.GetText(), range, text);
         _buffers.TryUpdate(key, new Buffer(newText), buffer);
     }
-    
+
     private static int GetIndex(string buffer, Position position)
     {
         var index = 0;
