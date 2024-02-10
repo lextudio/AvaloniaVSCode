@@ -37,8 +37,7 @@ public class CompletionHandler : CompletionHandlerBase
         {
             _logger.LogInformation("[Completion] Fallback (no metadata) proj={HasProject} asm={AsmExist} cache={HasMeta}",
                 _workspace.ProjectInfo != null, _workspace.ProjectInfo?.IsAssemblyExist, _workspace.CompletionMetadata != null);
-            return new CompletionList(new[]
-            {
+            return new CompletionList([
                 new CompletionItem
                 {
                     Label = "Build the project",
@@ -47,7 +46,7 @@ public class CompletionHandler : CompletionHandlerBase
                     Command = Command.Create("avalonia.createPreviewerAssets", new {triggerCodeComplete = true}),
                     InsertText = " "
                 }
-            });
+            ]);
         }
 
         var set = _completionEngine.GetCompletions(metadata!, text, text.Length);
