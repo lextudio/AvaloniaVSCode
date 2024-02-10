@@ -26,6 +26,11 @@ namespace AvaloniaLanguageServer.Models
                       ?? Projects.FirstOrDefault(p => !string.IsNullOrWhiteSpace(p.TargetPath));
             return exe;
         }
+
+        public IEnumerable<Project> GetExecutableProjects() =>
+            Projects.Where(project => project.OutputType == OutputTypeWinExe || project.OutputType == OutputTypeExe);
+
+        // todo: if multiple executable projects consume a given AXAML, allow user to select which project to use for context.
     }
 
     public partial class ProjectFile
