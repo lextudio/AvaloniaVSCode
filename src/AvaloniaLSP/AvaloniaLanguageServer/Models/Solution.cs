@@ -7,6 +7,7 @@ namespace AvaloniaLanguageServer.Models
         [JsonPropertyName("solution")]
         public string Solution { get; set; } = string.Empty;
 
+        /// <remarks>May include permutations of projects e.g. Name: "ProjectName (TFM)" or "ProjectName (TFM, RID)"</remarks>
         [JsonPropertyName("projects")]
         public Project[] Projects { get; set; } = Array.Empty<Project>();
 
@@ -62,6 +63,9 @@ namespace AvaloniaLanguageServer.Models
 
         [JsonPropertyName("targetFramework")]
         public string TargetFramework { get; set; } = string.Empty;
+
+        [JsonPropertyName("targetFrameworks")]
+        public string[] TargetFrameworks { get; set; } = Array.Empty<string>();
 
         [JsonPropertyName("depsFilePath")]
         public string DepsFilePath { get; set; } = string.Empty;
