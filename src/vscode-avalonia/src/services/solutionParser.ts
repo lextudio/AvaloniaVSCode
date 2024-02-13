@@ -194,14 +194,12 @@ async function isOutputExists(context?: vscode.ExtensionContext) {
 }
 
 async function parseSolution(context: vscode.ExtensionContext): Promise<string> {
-	// Use the extension path from the provided context (activated extension)
-	const extensionPath = context.extensionPath;
-	const solutionPath = await getSolutionFile(context);
+	const solutionPath = await getSolutionFile();
 	if (!solutionPath) {
 		throw new Error("Could not find solution file.");
 	}
 
-	const parserLocation = path.join(extensionPath, "solutionParserTool", "SolutionParser.dll");
+	const parserLocation = path.join(context.extensionPath, "solutionParserTool", "SolutionParser.dll");
 
 	return new Promise<string>(async (resolve, reject) => {
 		let dotnetCommandPath: string;
