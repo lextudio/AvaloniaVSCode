@@ -14,7 +14,7 @@ export const logger = vscode.window.createOutputChannel("Avalonia Client", { log
  * @param document vscode TextDocument
  * @returns `true` if it's an Avalonia file, `false` otherwise
  */
-const axamlLang = AppConstants._contributes?.languages.find((v: any) => v.id.toLowerCase() === avaloniaLanguageId);
+const axamlLang = AppConstants.contributions.languages.find((v: any) => v.id.toLowerCase() === avaloniaLanguageId);
 export function isAvaloniaFile(document: vscode.TextDocument): boolean {
 	// axamlLang will never be null | undefined!
 	if (!axamlLang) {
