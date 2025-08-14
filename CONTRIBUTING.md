@@ -23,7 +23,7 @@ Welcome to Avalonia Extension for VS Code! We appreciate your interest in contri
 
 1. Fork and Clone the repository
 
-    `git clone --recursive https://github.com/AvaloniaUI/AvaloniaVSCode`
+    `git clone --recursive https://github.com/lextudio/AvaloniaVSCode`
 
 2. Update submodules
 This extension uses git submodules to pull in the Solution Parser and the Avalonia Visual Studio repo. Run the following to pull in the submodules:
@@ -44,12 +44,28 @@ Hit `F5` this will a new vscode window with the dev extension running. Open an A
 
 ## Package Extension
 
-Make sure you run the `build.sh` before packaging and you have `vsce` installed. If you do not, run the following command: 
+Ensure you have `vsce` installed:
 
 ```bash
 npm install -g @vscode/vsce
 ```
 
-1. Open command palette (shift + cmd + p)
-2. Select `Task: Run Task`
-3. Select `Package Extension`
+Build & package (outputs VSIX under ./output):
+
+```bash
+./package.sh
+```
+
+Or specify a custom output directory:
+
+```bash
+./package.sh /path/to/out
+```
+
+The script will:
+
+- Copy the root README and LICENSE into `src/vscode-avalonia` temporarily
+- Build the language server (Release) & solution parser
+- Compile the TypeScript client
+- Run `vsce package` and place the .vsix in the output folder
+- Remove the temporary README / LICENSE copies from the extension folder

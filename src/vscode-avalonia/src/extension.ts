@@ -13,6 +13,25 @@ let languageClient: lsp.LanguageClient | null = null;
 export async function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "Avalonia UI" is now active!');
 
+	// Warn about conflicting / legacy Avalonia extensions that should be uninstalled
+	const conflicting = [
+		"AvaloniaTeam.vscode-avalonia", // legacy / upstream variant
+		"microhobby.vscode-avalonia-community" // community fork
+	];
+	const installedConflicts = conflicting
+		.map(id => vscode.extensions.getExtension(id))
+		.filter(ext => !!ext) as vscode.Extension<any>[];
+	if (installedConflicts.length) {
+		const names = installedConflicts.map(e => e.id).join(", ");
+		const choice = await vscode.window.showWarningMessage(
+			`Other Avalonia extensions detected (${names}). They may conflict. It is recommended to uninstall them and keep only 'lextudio.vscode-avalonia'.`,
+			"Open Extensions"
+		);
+		if (choice === "Open Extensions") {
+			await vscode.commands.executeCommand("workbench.extensions.search", "@installed avalonia");
+		}
+	}
+
 	const commandManager = new CommandManager();
 	context.subscriptions.push(registerAvaloniaCommands(commandManager, context));
 

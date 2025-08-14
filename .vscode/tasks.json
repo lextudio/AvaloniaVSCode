@@ -70,21 +70,6 @@
                 "${workspaceFolder}/src/vscode-avalonia/solutionParserTool"
             ],
             "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "Package Extension",
-            "type": "shell",
-            "command": "bash",
-            "args": [
-                "${workspaceFolder}/.vscode/package.sh",
-                "${workspaceFolder}/output/" //package directory
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}/src/vscode-avalonia" //working directory
-            },
-            "dependsOn": [
-                "Build Extension"
-            ]
-        }
+    }
     ]
 }
