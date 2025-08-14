@@ -88,6 +88,17 @@
         "title": "Create a new Avalonia Project",
         "category": "Avalonia"
       }
+      ,
+      {
+        "command": "avalonia.showSolutionDiscoveryInfo",
+        "title": "Show solution discovery info",
+        "category": "Avalonia"
+      },
+      {
+        "command": "avalonia.openSolutionModelJson",
+        "title": "Open solution model JSON",
+        "category": "Avalonia"
+      }
     ],
     "menus": {
       "editor/title": [

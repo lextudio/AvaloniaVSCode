@@ -1,12 +1,14 @@
 // The module 'vscode' contains the VS Code extensibility API
 
 import * as vscode from "vscode";
+import * as fs from "fs-extra";
 import * as lsp from "vscode-languageclient/node";
 import { createLanguageService } from "./client";
 import { registerAvaloniaCommands } from "./commands";
 import { CommandManager } from "./commandManager";
 import * as util from "./util/Utilities";
 import { AppConstants, logger } from "./util/Utilities";
+import { getLastDiscoveryMeta, buildSolutionModel, getSolutionDataFile } from "./services/solutionParser";
 
 let languageClient: lsp.LanguageClient | null = null;
 
@@ -85,6 +87,45 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	const commandManager = new CommandManager();
 	context.subscriptions.push(registerAvaloniaCommands(commandManager, context));
+
+	// Diagnostics command: show last solution discovery details
+	const diagCmd = vscode.commands.registerCommand("avalonia.showSolutionDiscoveryInfo", async () => {
+		const meta = getLastDiscoveryMeta(context);
+		if (!meta) {
+			vscode.window.showInformationMessage("No solution discovery metadata recorded yet. Building model now...");
+			try {
+				await buildSolutionModel(context, true);
+				const newMeta = getLastDiscoveryMeta(context);
+				if (!newMeta) {
+					vscode.window.showWarningMessage("Still no metadata after build (possible build failure or no workspace folder).");
+					return;
+				}
+				const rebuiltDetail = `Patterns: ${newMeta.searchedPatterns.join(", ")}\nMatched: ${newMeta.matchedFiles.join("; ") || "(none)"}\nSelected: ${newMeta.selectedFile || "(none)"}\nFallback: ${newMeta.fallbackToRoot}\nTime: ${newMeta.timestamp}`;
+				vscode.window.showInformationMessage("Avalonia Solution Discovery", { modal: true, detail: rebuiltDetail }, "OK");
+			} catch (e:any) {
+				vscode.window.showErrorMessage(`Error building solution model: ${e?.message ?? e}`);
+			}
+			return;
+		}
+		const detail = `Patterns: ${meta.searchedPatterns.join(", ")}\nMatched: ${meta.matchedFiles.join("; ") || "(none)"}\nSelected: ${meta.selectedFile || "(none)"}\nFallback: ${meta.fallbackToRoot}\nTime: ${meta.timestamp}`;
+		vscode.window.showInformationMessage("Avalonia Solution Discovery", { modal: true, detail }, "OK");
+	});
+	context.subscriptions.push(diagCmd);
+
+	const openJsonCmd = vscode.commands.registerCommand("avalonia.openSolutionModelJson", async () => {
+		try {
+			const p = await getSolutionDataFile(context);
+			if (!p || !(await fs.pathExists(p))) {
+				vscode.window.showWarningMessage("Solution model JSON not found yet. Run 'Show solution discovery info' first.");
+				return;
+			}
+			const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(p));
+			await vscode.window.showTextDocument(doc, { preview: false });
+		} catch (e:any) {
+			vscode.window.showErrorMessage(`Cannot open solution model JSON: ${e?.message ?? e}`);
+		}
+	});
+	context.subscriptions.push(openJsonCmd);
 
 	if (!vscode.workspace.workspaceFolders) {
 		return;

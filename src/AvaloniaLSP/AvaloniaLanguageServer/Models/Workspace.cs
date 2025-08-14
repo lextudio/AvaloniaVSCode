@@ -60,12 +60,16 @@ public class Workspace
 
     string? SolutionName(string RootPath)
     {
-        var slnFiles = Directory.EnumerateFiles(RootPath, "*.sln", SearchOption.AllDirectories);
-        foreach (string slnFile in slnFiles)
-        {
-            return Path.GetFileName(slnFile);
-        }
-        return null;
+        // Prefer .slnx over .sln if present. Pick the first (closest) file.
+        IEnumerable<string> Enumerate(string pattern) => Directory.EnumerateFiles(RootPath, pattern, SearchOption.AllDirectories);
+
+        var candidates = Enumerate("*.slnx").Concat(Enumerate("*.sln"))
+            .Select(p => new { Path = p, Depth = p.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).Length })
+            .OrderBy(p => p.Depth)
+            .ThenBy(p => p.Path, StringComparer.OrdinalIgnoreCase);
+
+        var first = candidates.FirstOrDefault();
+        return first != null ? Path.GetFileName(first.Path) : null;
     }
 
     public Metadata? CompletionMetadata { get; private set; }

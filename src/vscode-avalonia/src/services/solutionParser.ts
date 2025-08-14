@@ -1,6 +1,7 @@
 import * as fs from "fs-extra";
 import * as os from "os";
 import * as path from "path";
+import * as crypto from "crypto";
 
 import * as vscode from "vscode";
 
@@ -19,14 +20,18 @@ const extensionId = "AvaloniaTeam.vscode-avalonia";
  * @param force Whether to force the parsing of the solution file even if the output file already exists.
  */
 export async function buildSolutionModel(context: vscode.ExtensionContext, force: boolean = false) {
-	var { outputPath, isExist } = await isOutputExists();
+	var { outputPath, isExist } = await isOutputExists(context);
 
 	if (!isExist || force) {
+		logger.appendLine(`[SolutionModel] parsing required (exists=${isExist}, force=${force})`);
 		await parseSolution(context);
 		return;
 	}
 
 	const fileContent = await fs.readFile(outputPath!, "utf-8");
+	const size = Buffer.byteLength(fileContent, "utf8");
+	const hash = crypto.createHash("sha256").update(fileContent).digest("hex").slice(0, 12);
+	logger.appendLine(`[SolutionModel] using cached JSON size=${size}B hash=${hash}`);
 	updateSolutionModel(context, fileContent);
 }
 
@@ -44,8 +49,8 @@ export function getSolutionModel(context: vscode.ExtensionContext): sln.Solution
  * Returns the path to the solution data file.
  * @returns The path to the solution data file, or undefined if it doesn't exist.
  */
-export async function getSolutionDataFile() {
-	const slnFile = await getSolutionFile();
+export async function getSolutionDataFile(context?: vscode.ExtensionContext) {
+	const slnFile = await getSolutionFile(context);
 	if (!slnFile) {
 		logger.appendLine("Could not find solution file.");
 		return;
@@ -70,20 +75,65 @@ function updateSolutionModel(context: vscode.ExtensionContext, jsonContect: stri
 	context.workspaceState.update(AppConstants.solutionData, data);
 }
 
-async function getSolutionFile(): Promise<string | undefined> {
-	const filePattern = "**/*.sln";
-	const files = await vscode.workspace.findFiles(filePattern);
-
-	if (files.length > 0) {
-		return files[0].fsPath;
-	}
-
-	return vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+interface SolutionDiscoveryMeta {
+	searchedPatterns: string[];
+	matchedFiles: string[];
+	selectedFile?: string;
+	fallbackToRoot: boolean;
+	timestamp: string;
 }
 
-async function isOutputExists() {
-	const outputPath = await getSolutionDataFile();
-	logger.appendLine(`[EXT - INFO] Solution data path path: ${outputPath}`);
+export function getLastDiscoveryMeta(context: vscode.ExtensionContext): SolutionDiscoveryMeta | undefined {
+	return context.workspaceState.get<SolutionDiscoveryMeta>(AppConstants.solutionDiscoveryMeta);
+}
+
+async function recordDiscovery(context: vscode.ExtensionContext | undefined, meta: SolutionDiscoveryMeta) {
+	if (!context) { return; }
+	try { await context.workspaceState.update(AppConstants.solutionDiscoveryMeta, meta); } catch { /* ignore */ }
+}
+
+async function getSolutionFile(context?: vscode.ExtensionContext): Promise<string | undefined> {
+	const patterns = ["**/*.slnx", "**/*.sln"]; // order matters
+	const matched: string[] = [];
+	for (const pattern of patterns) {
+		const files = await vscode.workspace.findFiles(pattern, undefined, 50);
+		logger.appendLine(`[SolutionDiscovery] pattern=${pattern} count=${files.length}`);
+		if (files.length > 0) {
+			const sorted = files
+				.map(f => ({ f, depth: f.fsPath.split(/[\\\/]/).length }))
+				.sort((a, b) => a.depth - b.depth || a.f.fsPath.localeCompare(b.f.fsPath));
+			const chosen = sorted[0].f.fsPath;
+			matched.push(...files.map(f => f.fsPath));
+			if (files.length > 1) {
+				logger.appendLine(`[SolutionDiscovery] multipleMatches chosen=${chosen} total=${files.length}`);
+			} else {
+				logger.appendLine(`[SolutionDiscovery] chosen=${chosen}`);
+			}
+			await recordDiscovery(context, {
+				searchedPatterns: patterns,
+				matchedFiles: matched,
+				selectedFile: chosen,
+				fallbackToRoot: false,
+				timestamp: new Date().toISOString()
+			});
+			return chosen;
+		}
+	}
+	const root = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+	logger.appendLine(`[SolutionDiscovery] fallbackRoot=${root}`);
+	await recordDiscovery(context, {
+		searchedPatterns: patterns,
+		matchedFiles: matched,
+		selectedFile: root,
+		fallbackToRoot: true,
+		timestamp: new Date().toISOString()
+	});
+	return root;
+}
+
+async function isOutputExists(context?: vscode.ExtensionContext) {
+	const outputPath = await getSolutionDataFile(context);
+	logger.appendLine(`[EXT - INFO] Solution data path: ${outputPath}`);
 	return { outputPath, isExist: fs.pathExistsSync(outputPath!) };
 }
 
@@ -92,7 +142,7 @@ async function parseSolution(context: vscode.ExtensionContext): Promise<string> 
 	if (!avaloniaExtn) {
 		throw new Error("Could not find sample extension.");
 	}
-	const solutionPath = await getSolutionFile();
+	const solutionPath = await getSolutionFile(context);
 	if (!solutionPath) {
 		throw new Error("Could not find solution file.");
 	}
@@ -145,9 +195,9 @@ async function parseSolution(context: vscode.ExtensionContext): Promise<string> 
 				resolve(jsonContent);
 			}			
 			else {
-				if (errorData.length === 0)
+				if (errorData.length === 0) {
 					errorData = `Solution parser process exited with code ${code}`;
-
+				}
 				reject(new Error(errorData));
 			}
 		});
