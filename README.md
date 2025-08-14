@@ -63,5 +63,5 @@ Rich syntax highlighter and contextual code complete will make it lot easier to 
 
 ![Code completion](media/AutoCompleteRM.png)
 
-Copyright (c) 2023 AvaloniaUI
-Copyright (c) 2025 LeXtudio Inc.
+Copyright (c) 2023 AvaloniaUI  
+Copyright (c) 2025 LeXtudio Inc.  
