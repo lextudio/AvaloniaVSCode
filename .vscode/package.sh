@@ -3,6 +3,24 @@
 # Copy LICENSE file to local directory
 cp ../../LICENSE .
 
+# Temporarily replace extension README with root README to avoid duplication in source tree.
+ORIGINAL_README=README.md
+BACKUP_README=.README.original.backup
+if [ -f "$ORIGINAL_README" ]; then
+    mv "$ORIGINAL_README" "$BACKUP_README"
+fi
+cp ../../README.md "$ORIGINAL_README"
+
+# Ensure restoration even if script exits early
+restore_readme() {
+    rm -f LICENSE
+    if [ -f "$BACKUP_README" ]; then
+        rm -f "$ORIGINAL_README"
+        mv "$BACKUP_README" "$ORIGINAL_README"
+    fi
+}
+trap restore_readme EXIT
+
 # Check if output path is provided
 if [ -z "$1" ]
   then
@@ -23,5 +41,4 @@ else
     vsce package -o "$1"
 fi
 
-# Remove LICENSE file from local directory
-rm LICENSE
+# Cleanup handled by trap (restores README and removes LICENSE)

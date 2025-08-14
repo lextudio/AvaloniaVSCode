@@ -1,14 +1,14 @@
 {
   "name": "vscode-avalonia",
-  "displayName": "Avalonia for VSCode",
-  "description": "Avalonia tools for Visual Studio Code",
-  "publisher": "AvaloniaTeam",
-  "version": "0.0.32",
+  "displayName": "Avalonia for VSCode by LeXtudio Inc.",
+  "description": "Avalonia tools for Visual Studio Code. Published by LeXtudio Inc.",
+  "publisher": "lextudio",
+  "version": "11.0.32",
   "license": "MIT",
   "preview": true,
   "qna": "false",
   "sponsor": {
-    "url": "https://github.com/sponsors/AvaloniaUI"
+    "url": "https://github.com/sponsors/lextudio"
   },
   "icon": "./media/icon.png",
   "engines": {
@@ -27,11 +27,11 @@
     "theme": "dark"
   },
   "bugs": {
-    "url": "https://github.com/AvaloniaUI/AvaloniaVSCode/issues"
+    "url": "https://github.com/lextudio/AvaloniaVSCode/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/AvaloniaUI/AvaloniaVSCode"
+    "url": "https://github.com/lextudio/AvaloniaVSCode"
   },
   "activationEvents": [
     "workspaceContains:**/*.axaml",

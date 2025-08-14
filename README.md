@@ -1,8 +1,19 @@
-# Avalonia for Visual Studio Code
+# Avalonia for Visual Studio Code from LeXtudio Inc.
 
 [Avalonia](https://github.com/AvaloniaUI/Avalonia/) is a cross-platform XAML-based UI framework providing a flexible styling system and supporting a wide range of Operating Systems such as Windows via .NET Framework and .NET Core, Linux via Xorg and macOS.
 
-The Avalonia for Visual Studio Code Extension contains support for Avalonia XAML autocomplete and previewer.
+The Avalonia for Visual Studio Code Extension contains support for Avalonia XAML support like autocomplete, previewer, etc.
+
+> Fork & Maintenance Notice
+>
+> This repository is a fork maintained by **LeXtudio Inc.** Our goal is to actively maintain and enhance the Avalonia developer experience in Visual Studio Code by:
+>
+> - Keeping the extension up to date with new Avalonia releases
+> - Improving performance, reliability, and cross‑platform behavior
+> - Adding new productivity features (outline view, smarter completion, diagnostics, etc.)
+> - Responding to community feedback and accelerating fixes
+>
+> Issues and feature requests are welcome—your input helps shape the roadmap.
 
 Follow the [contribution guide](CONTRIBUTING.md) if you want to help us build the extension
 
@@ -43,3 +54,6 @@ The Avalonia XAML in the VS Code is powered by the same code completion engine a
 Rich syntax highlighter and contextual code complete will make it lot easier to read and write XAML files
 
 ![Code completion](media/AutoCompleteRM.png)
+
+Copyright (c) 2023 AvaloniaUI
+Copyright (c) 2025 LeXtudio Inc.

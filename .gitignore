@@ -398,3 +398,4 @@ output/
 
 # JetBrains Rider
 *.sln.iml
+src/vscode-avalonia/README.md
