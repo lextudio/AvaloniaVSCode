@@ -290,7 +290,9 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 			const json = JSON.parse(await fs.readFile(p, 'utf8'));
 			const projects: any[] = json.projects || [];
-			const exe = projects.find(pr => /^(?i:WinExe|Exe)$/.test(pr.normalizedOutputType || pr.outputType)) || projects.find(pr => pr.targetPath);
+			// NOTE: Original regex used inline case-insensitive group syntax /^(?i:WinExe|Exe)$/ which is invalid in JavaScript.
+			// Replace with equivalent using the 'i' flag. Simplified alternation (Win)?Exe.
+			const exe = projects.find(pr => /^(?:Win)?Exe$/i.test(pr.normalizedOutputType || pr.outputType)) || projects.find(pr => pr.targetPath);
 			if (!exe) {
 				vscode.window.showInformationMessage("No executable / targetPath project detected in model.");
 				return;
