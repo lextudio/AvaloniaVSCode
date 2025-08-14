@@ -1,5 +1,11 @@
 # Change Log
 
+## [11.0.34] - 14 August 2025
+
+Fixes:
+
+- Fixed invalid JS regex /^(?i:WinExe|Exe)$/ causing extension activation crash.
+
 ## [11.0.33] - 14 August 2025
 
 Highlights:
