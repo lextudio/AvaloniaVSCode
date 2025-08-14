@@ -23,6 +23,10 @@ Follow the [contribution guide](CONTRIBUTING.md) if you want to help us build th
 
 ## Getting Started
 
+### Recommended Companion Extension
+
+For consistent formatting of your AXAML files, we recommend optionally installing the community **XAML Styler** extension (`dabbinavo.xamlstyler`). The first time you use this extension you'll receive a prompt; you can also find it manually in the Extensions view by searching for "XAML Styler". This extension is optional—the Avalonia features work without it.
+
 ### Create a new Avalonia project
 
 You can create a new Avalonia project directly from the Visual Studio Code
@@ -31,7 +35,7 @@ You can create a new Avalonia project directly from the Visual Studio Code
 
 Additionally, you can create a project from the command line too, with the command:
 
-    $ dotnet new avalonia.app -o MyApp
+    dotnet new avalonia.app -o MyApp
 
 This will create a new folder called `MyApp` with your application files. You can install Avalonia project templates with following command, if you do not have them installed already:
 

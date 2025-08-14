@@ -32,6 +32,57 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	}
 
+	// Recommend XAML Styler extension if not installed and user hasn't suppressed recommendation
+	try {
+		const stylerId = "dabbinavo.xamlstyler";
+		const suppress = vscode.workspace.getConfiguration().get<boolean>("avalonia.suppressXamlStylerRecommendation", false);
+		if (!suppress && !vscode.extensions.getExtension(stylerId)) {
+			const choice = await vscode.window.showInformationMessage(
+				"For formatting AXAML you can optionally install 'XAML Styler'. Would you like to view it?",
+				"Show Extension",
+				"Don't Show Again"
+			);
+			if (choice === "Show Extension") {
+				await vscode.commands.executeCommand("workbench.extensions.search", stylerId);
+			} else if (choice === "Don't Show Again") {
+				await vscode.workspace.getConfiguration().update("avalonia.suppressXamlStylerRecommendation", true, vscode.ConfigurationTarget.Global);
+			}
+		}
+	} catch (e) {
+		logger.appendLine(`Failed recommending XAML Styler: ${e}`);
+	}
+
+	// Track activation count and prompt for rating after threshold
+	try {
+		const ratingSuppressKey = "avalonia.rateSuppress";
+		const activationCountKey = "avalonia.activationCount";
+		const suppressed = context.globalState.get<boolean>(ratingSuppressKey, false);
+		if (!suppressed) {
+			let count = context.globalState.get<number>(activationCountKey, 0) + 1;
+			await context.globalState.update(activationCountKey, count);
+			const threshold = 10;
+			if (count === threshold) {
+				const choice = await vscode.window.showInformationMessage(
+					"Enjoying Avalonia tools from LeXtudio Inc.? Would you like to rate the extension on the Marketplace?",
+					"Rate Now",
+					"Remind Me Later",
+					"Don't Ask Again"
+				);
+				if (choice === "Rate Now") {
+					await vscode.env.openExternal(vscode.Uri.parse("https://marketplace.visualstudio.com/items?itemName=lextudio.vscode-axaml&ssr=false#review-details"));
+					await context.globalState.update(ratingSuppressKey, true); // Don't re-prompt after rating
+				} else if (choice === "Don't Ask Again") {
+					await context.globalState.update(ratingSuppressKey, true);
+				} else if (choice === "Remind Me Later") {
+					// Reset counter to prompt again after threshold more activations
+					await context.globalState.update(activationCountKey, 0);
+				}
+			}
+		}
+	} catch (e) {
+		logger.appendLine(`Failed handling rating prompt: ${e}`);
+	}
+
 	const commandManager = new CommandManager();
 	context.subscriptions.push(registerAvaloniaCommands(commandManager, context));
 

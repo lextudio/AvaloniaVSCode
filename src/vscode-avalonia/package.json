@@ -119,6 +119,11 @@
             ],
             "default": "messages",
             "description": "Traces the communication between VS Code and the language server."
+          },
+          "avalonia.suppressXamlStylerRecommendation": {
+            "type": "boolean",
+            "default": false,
+            "description": "Suppress recommendation prompt to install the optional XAML Styler extension (dabbinavo.xamlstyler)."
           }
         }
       }
