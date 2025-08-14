@@ -1,5 +1,9 @@
 # Avalonia for Visual Studio Code from LeXtudio Inc.
 
+[![VS Code Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/lextudio.vscode-avalonia?label=Version)](https://marketplace.visualstudio.com/items?itemName=lextudio.vscode-avalonia)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/lextudio.vscode-avalonia?label=Installs)](https://marketplace.visualstudio.com/items?itemName=lextudio.vscode-avalonia)
+[![Downloads](https://img.shields.io/visual-studio-marketplace/d/lextudio.vscode-avalonia?label=Downloads)](https://marketplace.visualstudio.com/items?itemName=lextudio.vscode-avalonia)
+
 [Avalonia](https://github.com/AvaloniaUI/Avalonia/) is a cross-platform XAML-based UI framework providing a flexible styling system and supporting a wide range of Operating Systems such as Windows via .NET Framework and .NET Core, Linux via Xorg and macOS.
 
 The Avalonia for Visual Studio Code Extension contains support for Avalonia XAML support like autocomplete, previewer, etc.
@@ -31,7 +35,7 @@ Additionally, you can create a project from the command line too, with the comma
 
 This will create a new folder called `MyApp` with your application files. You can install Avalonia project templates with following command, if you do not have them installed already:
 
-    $ dotnet new install Avalonia.Templates
+    dotnet new install Avalonia.Templates
 
 Finally open the MyApp folder in the VS Code, open any axaml file to activate the extension and code completion.
 
