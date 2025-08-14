@@ -39,6 +39,10 @@ async function getServerStartupOptions(): Promise<lsp.ServerOptions> {
 	const dotnetCommandPath = await getDotnetRuntimePath();
 	const serverPath = getAvaloniaServerPath();
 
+	// Log resolved paths for easier troubleshooting
+	logger.appendLine(`[Avalonia LSP] dotnet: ${dotnetCommandPath}`);
+	logger.appendLine(`[Avalonia LSP] Language server DLL: ${serverPath}`);
+
 	const executable = {
 		command: dotnetCommandPath,
 		args: [serverPath],
