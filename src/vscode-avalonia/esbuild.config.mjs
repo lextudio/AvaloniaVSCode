@@ -14,18 +14,19 @@ if (existsSync(outDir)) {
 mkdirSync(outDir);
 
 // Bundle extension entry (code-split disabled so single file)
+// We keep CommonJS output so we don't need to mark the package as type=module.
+// Dependencies like 'bson' ship ESM with top-level await; bundling them into CJS
+// would trigger an esbuild error, so we externalize them and include their files
+// via .vscodeignore whitelist.
 await build({
   entryPoints: [entry],
   outfile: path.join(outDir, 'extension.js'),
   bundle: true,
   platform: 'node',
-  format: 'cjs',
   sourcemap: true,
-  target: ['node18'],
   external: [
-    'vscode',
-    'vscode-languageclient/node',
-    'bson'
+    'vscode', // provided by VS Code at runtime
+    'bson'    // left external (ESM with top-level await)
   ],
   minify: true,
   legalComments: 'none'
@@ -44,4 +45,4 @@ for (const a of assets) {
   cpSync(src, dst, { recursive: true });
 }
 
-console.log('esbuild bundling complete -> dist/extension.js');
+console.log('esbuild bundling complete -> out/extension.js');

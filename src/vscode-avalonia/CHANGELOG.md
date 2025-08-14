@@ -1,5 +1,14 @@
 # Change Log
 
+## [11.0.33] - 14 August 2025
+
+Highlights:
+
+- Cached XAML metadata (with invalidate command) for faster cold start.
+- New commands: show chosen executable project; invalidate metadata cache.
+- Better assembly resolution (workspace root passed) and updated docs/logging.
+- Other performance improvements.
+
 ## [11.0.32] - 14 August 2025
 
 Fixes:
@@ -23,7 +32,7 @@ Fixes:
 
 ## [0.0.25] - 27 November 2023
 
-Fixes: 
+Fixes:
 
 - AXAML intellisense in VS Code broken [#66](https://github.com/AvaloniaUI/AvaloniaVSCode/issues/66)
 - ALWAYS: Previewer is not available. Build the project first. [#72](https://github.com/AvaloniaUI/AvaloniaVSCode/issues/72)
@@ -37,38 +46,44 @@ Fixed the blocker issue [#65](https://github.com/AvaloniaUI/AvaloniaVSCode/issue
 
 ## [0.0.22] - 25 October 2023
 
-## What's Changed
-* fixes: Previewer does not work in the v0.0.21 [#63](https://github.com/AvaloniaUI/AvaloniaVSCode/issues/63)
+### Changes
+
+- Fixes: Previewer does not work in the v0.0.21 [#63](https://github.com/AvaloniaUI/AvaloniaVSCode/issues/63)
 
 ## [0.0.21] - 25 October 2023
 
-## What's Changed
-* feat: Add C# snippet for Avalonia AttachedProperty, DirectProperty, S… by @workgroupengineering in https://github.com/AvaloniaUI/AvaloniaVSCode/pull/59
-* Fixes warnings by @workgroupengineering in https://github.com/AvaloniaUI/AvaloniaVSCode/pull/60
+### Notable Changes (0.0.21)
 
-## New Contributors
-* @workgroupengineering made their first contribution in https://github.com/AvaloniaUI/AvaloniaVSCode/pull/59
+- feat: Add C# snippet for Avalonia AttachedProperty, DirectProperty, StaticProperty by @workgroupengineering in [#59](https://github.com/AvaloniaUI/AvaloniaVSCode/pull/59)
+- Fixes warnings by @workgroupengineering in [#60](https://github.com/AvaloniaUI/AvaloniaVSCode/pull/60)
 
-**Full Changelog**: https://github.com/AvaloniaUI/AvaloniaVSCode/compare/v0.0.20...v0.0.21
+### New Contributors
+
+- @workgroupengineering made their first contribution in [#59](https://github.com/AvaloniaUI/AvaloniaVSCode/pull/59)
+
+**Full Changelog**: [v0.0.20...v0.0.21](https://github.com/AvaloniaUI/AvaloniaVSCode/compare/v0.0.20...v0.0.21)
 
 ## [0.0.20] - 9 October 2023
 
-## What's Changed
-* Fix the mouse interaction in previewer by @prashantvc in https://github.com/AvaloniaUI/AvaloniaVSCode/pull/56
-* Improve indentation by @prashantvc in https://github.com/AvaloniaUI/AvaloniaVSCode/pull/57
+### Notable Changes (0.0.20)
 
+- Fix the mouse interaction in previewer by @prashantvc in [#56](https://github.com/AvaloniaUI/AvaloniaVSCode/pull/56)
+- Improve indentation by @prashantvc in [#57](https://github.com/AvaloniaUI/AvaloniaVSCode/pull/57)
 
-**Full Changelog**: https://github.com/AvaloniaUI/AvaloniaVSCode/compare/v0.0.19...v0.0.20
+**Full Changelog**: [v0.0.19...v0.0.20](https://github.com/AvaloniaUI/AvaloniaVSCode/compare/v0.0.19...v0.0.20)
 
 ## [0.0.19] - 13 September 2023
-### What's Changed
-* Allow users to create a new project from VSCode by @prashantvc in https://github.com/AvaloniaUI/AvaloniaVSCode/pull/47
-* Previewer Window Title does not update on tab switch by @prashantvc in https://github.com/AvaloniaUI/AvaloniaVSCode/pull/50
 
+### Notable Changes (0.0.19)
 
-**Full Changelog**: https://github.com/AvaloniaUI/AvaloniaVSCode/compare/v0.0.18...v0.0.19
+- Allow users to create a new project from VSCode by @prashantvc in [#47](https://github.com/AvaloniaUI/AvaloniaVSCode/pull/47)
+- Previewer Window Title does not update on tab switch by @prashantvc in [#50](https://github.com/AvaloniaUI/AvaloniaVSCode/pull/50)
+
+**Full Changelog**: [v0.0.18...v0.0.19](https://github.com/AvaloniaUI/AvaloniaVSCode/compare/v0.0.18...v0.0.19)
+ 
 ## [0.0.18] - 08 September 2023
-### Fixes
+
+### Notable Fixes (0.0.18)
 
 - Extenstion not activating #39
 - Extension fails to launch child process if VS Code path has spaces #41
@@ -76,7 +91,7 @@ Fixed the blocker issue [#65](https://github.com/AvaloniaUI/AvaloniaVSCode/issue
 
 ## [0.0.17] - 01 September 2023
 
-### Fixes
+### Notable Fixes (0.0.17)
 
 - Previewer is blank, it does not get update until focus change. [Issue #8](https://github.com/AvaloniaUI/Avalonia-VSCode-Extension/issues/8)
 - Previewer doesn't work when opened from command palette. [Issue #5](https://github.com/AvaloniaUI/Avalonia-VSCode-Extension/issues/5)
@@ -90,7 +105,7 @@ Fixed the blocker issue [#65](https://github.com/AvaloniaUI/AvaloniaVSCode/issue
 - Improve the XAML previewer performace
 - Support Avalonia xplat solution
 
-### Known issues
+### Known Issues (0.0.11)
 
 1. Previewer may take up to 10 seconds to activate for the first time if you’re using Avalonia `v0.10.*`
 2. You must build the project before using the preivewer
@@ -110,7 +125,7 @@ Fixed the blocker issue [#65](https://github.com/AvaloniaUI/AvaloniaVSCode/issue
 - Fixed the issue where `Show preview` command is available for all `xml` files (issue #15)
 - Previewer now shows the preview from the active `axaml` file (issue #19)
 
-### Known issues
+### Known Issues (0.0.3)
 
 - Previewer may take over 5 seconds to render if you're using Avalonia 0.10.*
 - Auto complete my crash for large files
@@ -121,7 +136,7 @@ Fixed the blocker issue [#65](https://github.com/AvaloniaUI/AvaloniaVSCode/issue
 - Previewer now has grid bacground
 - Previewer changes backgroud based on VS Code theme
 
-### Known issues
+### Known Issues
 
 - Previewer will not update when you switch between `axaml` files
 
