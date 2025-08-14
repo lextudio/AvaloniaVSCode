@@ -63,5 +63,29 @@ Rich syntax highlighter and contextual code complete will make it lot easier to 
 
 ![Code completion](media/AutoCompleteRM.png)
 
+### Performance & Caching
+
+The extension caches extracted XAML metadata per built assembly in your OS temp directory to speed up cold starts. If you suspect stale data (new controls not appearing), use the command palette command:
+
+`Avalonia: Invalidate Avalonia metadata cache`
+
+It will remove cached metadata so the next completion request rebuilds it.
+
+### Useful Commands
+
+- `Avalonia: Show solution discovery info`
+- `Avalonia: Open solution model JSON`
+- `Avalonia: Rebuild solution model`
+- `Avalonia: Show chosen executable project`
+- `Avalonia: Invalidate Avalonia metadata cache`
+- `Avalonia: Toggle verbose Avalonia logs`
+
+### Settings Highlights
+
+- `avalonia.buildConfigurationPreference` – Assembly resolution preference (Debug / Release / Auto)
+- `avalonia.verboseLogs` – Detailed assembly probing & metadata diagnostics
+- `avalonia.debounceFsEventsMs` – Debounce for project/launch.json changes before model rebuild
+- `axaml.trace.server` – LSP protocol tracing (messages / verbose)
+
 Copyright (c) 2023 AvaloniaUI  
 Copyright (c) 2025 LeXtudio Inc.  

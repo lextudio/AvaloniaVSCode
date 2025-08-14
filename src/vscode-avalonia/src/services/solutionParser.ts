@@ -11,7 +11,7 @@ import { spawn } from "child_process";
 import { AppConstants, logger } from "../util/Utilities";
 import { getDotnetRuntimePath } from "../runtimeManager";
 
-const extensionId = "AvaloniaTeam.vscode-avalonia";
+// Use the active extension context path; avoid hard-coded legacy id
 
 /**
  * Builds the solution model by parsing the solution file and updating the workspace state.
@@ -138,16 +138,14 @@ async function isOutputExists(context?: vscode.ExtensionContext) {
 }
 
 async function parseSolution(context: vscode.ExtensionContext): Promise<string> {
-	const avaloniaExtn = vscode.extensions.getExtension(extensionId);
-	if (!avaloniaExtn) {
-		throw new Error("Could not find sample extension.");
-	}
+	// Use the extension path from the provided context (activated extension)
+	const extensionPath = context.extensionPath;
 	const solutionPath = await getSolutionFile(context);
 	if (!solutionPath) {
 		throw new Error("Could not find solution file.");
 	}
 
-	const parserLocation = path.join(avaloniaExtn.extensionPath, "solutionParserTool", "SolutionParser.dll");
+	const parserLocation = path.join(extensionPath, "solutionParserTool", "SolutionParser.dll");
 
 	return new Promise<string>(async (resolve, reject) => {
 		let dotnetCommandPath: string;

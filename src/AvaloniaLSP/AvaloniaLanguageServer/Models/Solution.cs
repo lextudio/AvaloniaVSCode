@@ -15,7 +15,12 @@ namespace AvaloniaLanguageServer.Models
 
         public Project? GetExecutableProject()
         {
-            return Projects.FirstOrDefault(project => project.OutputType == "WinExe");
+            bool IsWinExe(Project p) => string.Equals(p.NormalizedOutputType ?? p.OutputType, "WinExe", StringComparison.OrdinalIgnoreCase);
+            bool IsExe(Project p) => string.Equals(p.NormalizedOutputType ?? p.OutputType, "Exe", StringComparison.OrdinalIgnoreCase);
+            var exe = Projects.FirstOrDefault(IsWinExe)
+                      ?? Projects.FirstOrDefault(IsExe)
+                      ?? Projects.FirstOrDefault(p => !string.IsNullOrWhiteSpace(p.TargetPath));
+            return exe;
         }
     }
 
@@ -44,6 +49,9 @@ namespace AvaloniaLanguageServer.Models
 
         [JsonPropertyName("outputType")]
         public string OutputType { get; set; } = string.Empty;
+
+    [JsonPropertyName("normalizedOutputType")]
+    public string? NormalizedOutputType { get; set; }
 
         [JsonPropertyName("designerHostPath")]
         public string DesignerHostPath { get; set; } = string.Empty;

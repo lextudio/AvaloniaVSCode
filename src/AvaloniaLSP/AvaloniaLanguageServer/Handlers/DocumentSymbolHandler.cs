@@ -59,12 +59,17 @@ public class DocumentSymbolHandler : DocumentSymbolHandlerBase
         {
             if (ev.IsStart)
             {
+                if (string.IsNullOrWhiteSpace(ev.TagName))
+                {
+                    _logger.LogDebug("[DocSymbols] Skipping start tag with empty name at {Pos}", ev.TagStart);
+                    continue;
+                }
                 var node = new Node
                 {
                     TagName = ev.TagName,
                     Start = ev.TagStart,
-                    NameTokenStart = ev.NameStart,
-                    NameTokenEnd = ev.NameEnd,
+                    NameTokenStart = ev.NameStart < 0 ? ev.TagStart : ev.NameStart,
+                    NameTokenEnd = ev.NameEnd < 0 || ev.NameEnd < ev.NameStart ? (ev.NameStart < 0 ? ev.TagStart + ev.TagName.Length : ev.NameStart + ev.TagName.Length) : ev.NameEnd,
                     End = ev.TagEnd
                 };
                 if (ev.IsSelfClosing)
@@ -74,6 +79,10 @@ public class DocumentSymbolHandler : DocumentSymbolHandlerBase
             }
             else if (ev.IsClosing)
             {
+                if (string.IsNullOrWhiteSpace(ev.TagName))
+                {
+                    _logger.LogDebug("[DocSymbols] Skipping closing tag with empty name at {Pos}", ev.TagStart);
+                }
                 while (stack.Count > 0)
                 {
                     var node = stack.Pop();

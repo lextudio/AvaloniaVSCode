@@ -1,6 +1,7 @@
 using Avalonia.Ide.CompletionEngine;
 using AvaloniaLanguageServer.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
+using Microsoft.Extensions.Logging;
 
 namespace AvaloniaLanguageServer.Handlers;
 
@@ -34,6 +35,8 @@ public class CompletionHandler : CompletionHandlerBase
         var metadata = await InitializeCompletionEngineAsync(request.TextDocument.Uri);
         if (metadata == null)
         {
+            _logger.LogInformation("[Completion] Fallback (no metadata) proj={HasProject} asm={AsmExist} cache={HasMeta}",
+                _workspace.ProjectInfo != null, _workspace.ProjectInfo?.IsAssemblyExist, _workspace.CompletionMetadata != null);
             return new CompletionList(new[]
             {
                 new CompletionItem
@@ -59,6 +62,15 @@ public class CompletionHandler : CompletionHandlerBase
                 Kind = GetCompletionItemKind(p.Kind),
             });
 
+        if (completions == null)
+        {
+            _logger.LogInformation("[Completion] Engine returned null completions (namespaceCount={NsCount})", metadata.Namespaces.Count);
+        }
+        else
+        {
+            _logger.LogInformation("[Completion] Returning {Count} completion items (namespaceCount={NsCount})", completions.Count(), metadata.Namespaces.Count);
+        }
+
 
         if (completions == null)
             return new CompletionList(true);
@@ -80,24 +92,34 @@ public class CompletionHandler : CompletionHandlerBase
 
     async Task<Metadata?> InitializeCompletionEngineAsync(DocumentUri uri)
     {
-        if (_workspace.ProjectInfo is not { IsAssemblyExist: true })
-            return null;
+        // If metadata already loaded, return immediately (even if current project assembly missing)
+        if (_workspace.CompletionMetadata != null)
+            return _workspace.CompletionMetadata;
 
-        if (_workspace.ProjectInfo.IsAssemblyExist && _workspace.CompletionMetadata == null)
+        // Ensure workspace (ProjectInfo + attempt metadata) initialized
+        await _workspace.InitializeAsync(uri, _getServer()?.Client.ClientSettings.RootPath);
+        _logger.LogInformation("[Completion] Init proj={HasProj} asm={Asm} meta={Meta}",
+            _workspace.ProjectInfo != null, _workspace.ProjectInfo?.IsAssemblyExist, _workspace.CompletionMetadata != null);
+
+        // If we still lack metadata, log reasons
+        if (_workspace.CompletionMetadata == null)
         {
-            await _workspace.InitializeAsync(uri, _getServer()?.Client.ClientSettings.RootPath);
+            if (_workspace.ProjectInfo == null)
+                _logger.LogInformation("[Completion] No project for {Uri}", uri);
+            else if (!_workspace.ProjectInfo.IsAssemblyExist)
+                _logger.LogInformation("[Completion] Assembly missing for {Project}", _workspace.ProjectInfo.ProjectPath);
         }
-
         return _workspace.CompletionMetadata;
     }
 
-    public CompletionHandler(Workspace workspace, DocumentSelector documentSelector, Func<ILanguageServer?> getServer)
+    public CompletionHandler(Workspace workspace, DocumentSelector documentSelector, Func<ILanguageServer?> getServer, ILogger<CompletionHandler> logger)
     {
         _workspace = workspace;
         _documentSelector = documentSelector;
         _getServer = getServer;
 
         _completionEngine = new CompletionEngine();
+        _logger = logger;
     }
 
     static CompletionItemKind GetCompletionItemKind(CompletionKind completionKind)
@@ -127,6 +149,7 @@ public class CompletionHandler : CompletionHandlerBase
     readonly Func<ILanguageServer?> _getServer;
 
     readonly CompletionEngine _completionEngine;
+    readonly ILogger<CompletionHandler> _logger;
 
     readonly string[] _triggerChars = { "\'", "\"", " ", "<", ".", "[", "(", "#", "|", "/", "{" };
 }

@@ -9,10 +9,17 @@ export async function createLanguageService(): Promise<lsp.LanguageClient> {
 	const serverOptions = await getServerStartupOptions();
 	let outputChannel = logger;
 
+	const pref = vscode.workspace.getConfiguration("avalonia").get<string>("buildConfigurationPreference", "Auto");
+	const verbose = vscode.workspace.getConfiguration("avalonia").get<boolean>("verboseLogs", false);
 	const clientOptions: lsp.LanguageClientOptions = {
 		documentSelector: [{ language: avaloniaLanguageId }],
 		progressOnInitialization: true,
 		outputChannel,
+		initializationOptions: {
+			buildConfigurationPreference: pref,
+			verboseLogs: verbose,
+			workspaceRoot: vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0 ? vscode.workspace.workspaceFolders[0].uri.fsPath : undefined
+		},
 		synchronize: {
 			configurationSection: "avalonia",
 			fileEvents: vscode.workspace.createFileSystemWatcher("**/*.axaml"),

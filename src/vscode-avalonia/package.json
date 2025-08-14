@@ -99,6 +99,32 @@
         "title": "Open solution model JSON",
         "category": "Avalonia"
       }
+      ,
+      {
+        "command": "avalonia.rebuildSolutionModel",
+        "title": "Rebuild solution model",
+        "category": "Avalonia"
+      },
+      {
+        "command": "avalonia.showAssemblyResolutionError",
+        "title": "Show last assembly resolution error",
+        "category": "Avalonia"
+      },
+      {
+        "command": "avalonia.showChosenProject",
+        "title": "Show chosen executable project",
+        "category": "Avalonia"
+      },
+      {
+        "command": "avalonia.toggleVerboseLogs",
+        "title": "Toggle verbose Avalonia logs",
+        "category": "Avalonia"
+      },
+      {
+        "command": "avalonia.invalidateMetadataCache",
+        "title": "Invalidate Avalonia metadata cache",
+        "category": "Avalonia"
+      }
     ],
     "menus": {
       "editor/title": [
@@ -135,6 +161,24 @@
             "type": "boolean",
             "default": false,
             "description": "Suppress recommendation prompt to install the optional XAML Styler extension (dabbinavo.xamlstyler)."
+          },
+          "avalonia.buildConfigurationPreference": {
+            "type": "string",
+            "enum": ["Debug", "Release", "Auto"],
+            "default": "Auto",
+            "description": "Preferred build configuration when locating assemblies. Auto = try Debug then Release."
+          },
+          "avalonia.verboseLogs": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable verbose Avalonia language server logs (assembly scanning, metadata fallback)."
+          },
+          "avalonia.debounceFsEventsMs": {
+            "type": "number",
+            "default": 600,
+            "minimum": 100,
+            "maximum": 10000,
+            "description": "Debounce interval in milliseconds for project/launch.json file change events before rebuilding the solution model."
           }
         }
       }
