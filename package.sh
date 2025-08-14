@@ -24,9 +24,9 @@ echo "Building language server + solution parser (Release)..."
 dotnet build "$ROOT_DIR/src/AvaloniaLSP/AvaloniaLanguageServer/AvaloniaLanguageServer.csproj" -c Release --nologo --output "$EXT_DIR/avaloniaServer"
 dotnet build "$ROOT_DIR/src/SolutionParser/SolutionParser.csproj" -c Release --nologo --output "$EXT_DIR/solutionParserTool"
 
-echo "Building extension (TypeScript)..."
+echo "Building & bundling extension (TypeScript via esbuild)..."
 yarn --silent install --frozen-lockfile || yarn install
-yarn --silent compile
+yarn --silent bundle
 
 echo "Packaging with vsce..."
 if command -v vsce >/dev/null 2>&1; then
