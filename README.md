@@ -1,8 +1,8 @@
 # Avalonia for Visual Studio Code from LeXtudio Inc.
 
-[![VS Code Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/lextudio.vscode-avalonia?label=Version)](https://marketplace.visualstudio.com/items?itemName=lextudio.vscode-avalonia)
-[![Installs](https://img.shields.io/visual-studio-marketplace/i/lextudio.vscode-avalonia?label=Installs)](https://marketplace.visualstudio.com/items?itemName=lextudio.vscode-avalonia)
-[![Downloads](https://img.shields.io/visual-studio-marketplace/d/lextudio.vscode-avalonia?label=Downloads)](https://marketplace.visualstudio.com/items?itemName=lextudio.vscode-avalonia)
+[![VS Code Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/lextudio.vscode-axaml?label=Version)](https://marketplace.visualstudio.com/items?itemName=lextudio.vscode-axaml)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/lextudio.vscode-axaml?label=Installs)](https://marketplace.visualstudio.com/items?itemName=lextudio.vscode-axaml)
+[![Downloads](https://img.shields.io/visual-studio-marketplace/d/lextudio.vscode-axaml?label=Downloads)](https://marketplace.visualstudio.com/items?itemName=lextudio.vscode-axaml)
 
 [Avalonia](https://github.com/AvaloniaUI/Avalonia/) is a cross-platform XAML-based UI framework providing a flexible styling system and supporting a wide range of Operating Systems such as Windows via .NET Framework and .NET Core, Linux via Xorg and macOS.
 

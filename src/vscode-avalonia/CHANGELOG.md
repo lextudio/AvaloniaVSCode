@@ -1,6 +1,10 @@
 # Change Log
 
-All notable changes to the "vscode-avalonia" extension will be documented in this file.
+## [11.0.32] - 14 August 2025
+
+Fixes:
+
+- Added AXAML outline support.
 
 ## [0.0.27] - 18 January 2024
 

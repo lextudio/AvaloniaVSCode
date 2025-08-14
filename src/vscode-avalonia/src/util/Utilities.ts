@@ -91,7 +91,7 @@ export class AppConstants {
 
 	static readonly updatePreviewerContent = "avalonia.updatePreviewerContext";
 
-	static readonly extensionId = "lextudio.vscode-avalonia";
+	static readonly extensionId = "lextudio.vscode-axaml";
 
 	static readonly newProjectCommandId = "avalonia.newProject";
 }

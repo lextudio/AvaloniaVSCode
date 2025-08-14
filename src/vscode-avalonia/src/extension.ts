@@ -24,7 +24,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	if (installedConflicts.length) {
 		const names = installedConflicts.map(e => e.id).join(", ");
 		const choice = await vscode.window.showWarningMessage(
-			`Other Avalonia extensions detected (${names}). They may conflict. It is recommended to uninstall them and keep only 'lextudio.vscode-avalonia'.`,
+			`Other Avalonia extensions detected (${names}). They may conflict. It is recommended to uninstall them and keep only 'lextudio.vscode-axaml'.`,
 			"Open Extensions"
 		);
 		if (choice === "Open Extensions") {
