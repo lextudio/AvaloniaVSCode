@@ -1,5 +1,11 @@
 # Change Log
 
+## [11.0.35] - 15 August 2025
+
+Fixes:
+
+- Updated language server to run on .NET 9 and removes .NET 8 dependency.
+
 ## [11.0.34] - 14 August 2025
 
 Fixes:
