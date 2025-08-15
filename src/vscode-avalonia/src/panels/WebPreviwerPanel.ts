@@ -155,31 +155,50 @@ export class WebPreviewerPanel {
 		</style>
 	</head>
 	<body>
-		<div id="menubar">
-			<button onclick="scaleContent(-1)">-</button>
-			<button onclick="scaleContent(1)">+</button>
-			<button onclick="scaleContent(0)" id="scaleBtn"></button>
-		</div>
+		   <div id="menubar">
+			   <input type="range" id="scaleSlider" min="25" max="200" value="100" style="width: 120px;" />
+			   <span id="scaleLabel" style="min-width: 48px; text-align: center;">100%</span>
+			   <button id="resetScaleBtn" title="Reset scale" style="padding: 2px 8px;">⟳</button>
+		   </div>
 
 		<div id="scalable">
 			<iframe src="${url}" id="preview" scrolling="no"></iframe>
 		</div>
-
 		<script>
-			const scaleBtn = document.getElementById('scaleBtn');
-			const scalable = document.getElementById('scalable');
-			let scale = 1.0;
+			   var scaleSlider = document.getElementById('scaleSlider');
+			   var scaleLabel = document.getElementById('scaleLabel');
+			   var resetScaleBtn = document.getElementById('resetScaleBtn');
+			   var scalable = document.getElementById('scalable');
+			   var scale = 1.0;
 
-			scaleBtn.textContent = scale;
+			   function setScale(newScale) {
+				   scale = newScale;
+				   if (scalable) {
+					   scalable.style.transform = 'scale(' + scale + ')';
+				   }
+				   if (scaleLabel) {
+					   scaleLabel.textContent = Math.round(scale * 100) + '%';
+				   }
+				   if (scaleSlider) {
+					   scaleSlider.value = Math.round(scale * 100);
+				   }
+			   }
 
-			function scaleContent(direction) {
-				if (direction === -1 && scale > 0.25) scale -= 0.25;
-				if (direction === 0) scale = 1.0;
-				if (direction === 1 && scale < 2) scale += 0.25;
+			   if (scaleSlider) {
+				   scaleSlider.addEventListener('input', function() {
+					   var newScale = Number(scaleSlider.value) / 100;
+					   setScale(newScale);
+				   });
+			   }
+			   if (resetScaleBtn) {
+				   resetScaleBtn.addEventListener('click', function() {
+					   setScale(1.0);
+				   });
+			   }
 
-				scaleBtn.textContent = scale;
-				scalable.style.transform = \`scale(\${scale})\`;
-			}
+			   // Initialize scale on load
+			   setScale(scale);
+
 		</script>
 	</body>
 	</html>`;
