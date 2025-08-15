@@ -1,5 +1,11 @@
 # Change Log
 
+## [11.0.37] - 15 August 2025
+
+Highlights:
+
+- Added previewer scale controls.
+
 ## [11.0.36] - 15 August 2025
 
 Fixes:
