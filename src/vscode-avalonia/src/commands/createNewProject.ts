@@ -3,6 +3,7 @@ import { AppConstants, logger } from "../util/Utilities";
 import * as vscode from "vscode";
 import { spawn } from "child_process";
 import path = require("path");
+import { getDotnetRuntimePath } from "../runtimeManager";
 
 export class CreateNewProject implements Command {
 	public readonly id = AppConstants.newProjectCommandId;
@@ -50,6 +51,13 @@ export class CreateNewProject implements Command {
 
 	async createProject(projectName: string | undefined, template: string): Promise<string | undefined> {
 		if (!projectName || !template) {
+			return;
+		}
+		// Verify .NET runtime is installed
+		try {
+			await getDotnetRuntimePath();
+		} catch (err) {
+			vscode.window.showErrorMessage(".NET runtime is required to create Avalonia projects. Please install .NET and try again.");
 			return;
 		}
 		const folders = await vscode.window.showOpenDialog({
