@@ -1,5 +1,12 @@
 # Change Log
 
+## [11.0.38] - 15 August 2025
+
+Highlights:
+
+- Improved completion and status bar icon.
+
+
 ## [11.0.37] - 15 August 2025
 
 Highlights:
