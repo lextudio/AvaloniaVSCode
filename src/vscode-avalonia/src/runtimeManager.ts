@@ -25,13 +25,22 @@ export async function getDotnetRuntimePath(): Promise<string> {
 			installType: 'global',
 			architecture: process.arch
 		},
-		versionSpecRequirement: 'greater_than_or_equal'
+		versionSpecRequirement: 'equal'
 	});
 
 	if (!path) {
-		const message = `.NET ${dotnetRuntimeVersion} was not found. Please make sure it's installed globally.`;
-		logger.error(message);
-		throw new Error(message);
+		const install = await vscode.commands.executeCommand("dotnet.acquire", {
+			version: dotnetRuntimeVersion,
+			requestingExtensionId: AppConstants.extensionId,
+			mode: 'runtime',
+			installType: 'global',
+			architecture: process.arch
+		});
+		if (!install) {
+			const message = `.NET ${dotnetRuntimeVersion} was not found and could not be installed automatically. Please make sure it's installed globally.`;
+			logger.error(message);
+			throw new Error(message);
+		}
 	}
 
 	return path.dotnetPath;
