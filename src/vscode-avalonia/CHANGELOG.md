@@ -1,5 +1,11 @@
 # Change Log
 
+## [11.0.36] - 15 August 2025
+
+Fixes:
+
+- Revised previewer to work with Avalonia 11.3.3 on macOS.
+
 ## [11.0.35] - 15 August 2025
 
 Fixes:
