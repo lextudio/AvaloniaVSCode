@@ -70,7 +70,7 @@ export class PreviewServer implements IPreviewServer {
 	/**
 	 * Gets whether the preview server is running.
 	 */
-	public get isRunnig() {
+	public get isRunning() {
 		return this._server?.listening;
 	}
 
@@ -80,14 +80,20 @@ export class PreviewServer implements IPreviewServer {
 	 * @param port The port to use for the preview server.
 	 */
 	public static getInstance(assemblyName: string, port: number): PreviewServer {
-		var instance = PreviewServer.getInstanceByAssemblyName(assemblyName);
+		let instance = PreviewServer.getInstanceByAssemblyName(assemblyName);
 		if (instance) {
-			return instance;
+			// If the port is different, stop and replace the instance
+			if ((instance as any)._port !== port) {
+				instance.stop();
+				PreviewServer._servers.delete(assemblyName);
+				instance = undefined;
+			} else {
+				return instance;
+			}
 		}
-
-		PreviewServer._instance ??= new PreviewServer(assemblyName, port);
-		PreviewServer._servers.set(assemblyName, PreviewServer._instance);
-		return PreviewServer._instance;
+		const newInstance = new PreviewServer(assemblyName, port);
+		PreviewServer._servers.set(assemblyName, newInstance);
+		return newInstance;
 	}
 
 	/**
