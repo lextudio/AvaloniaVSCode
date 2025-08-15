@@ -98,31 +98,10 @@
         "command": "avalonia.openSolutionModelJson",
         "title": "Open solution model JSON",
         "category": "Avalonia"
-      }
-      ,
-      {
-        "command": "avalonia.rebuildSolutionModel",
-        "title": "Rebuild solution model",
-        "category": "Avalonia"
-      },
-      {
-        "command": "avalonia.showAssemblyResolutionError",
-        "title": "Show last assembly resolution error",
-        "category": "Avalonia"
-      },
-      {
-        "command": "avalonia.showChosenProject",
-        "title": "Show chosen executable project",
-        "category": "Avalonia"
       },
       {
         "command": "avalonia.toggleVerboseLogs",
         "title": "Toggle verbose Avalonia logs",
-        "category": "Avalonia"
-      },
-      {
-        "command": "avalonia.invalidateMetadataCache",
-        "title": "Invalidate Avalonia metadata cache",
         "category": "Avalonia"
       }
     ],
@@ -179,14 +158,6 @@
             "description": "Preferred build configuration for locating assemblies used by completion (Auto tries Debug then Release).",
             "scope": "workspace"
           },
-          "avalonia.completion.debounceFsEventsMs": {
-            "type": "number",
-            "default": 600,
-            "minimum": 100,
-            "maximum": 10000,
-            "description": "Debounce interval (ms) for project / launch file change events before rebuilding solution model.",
-            "scope": "workspace"
-          },
           "avalonia.misc.suppressXamlStylerRecommendation": {
             "type": "boolean",
             "default": false,
@@ -229,15 +200,6 @@
             "default": "Auto",
             "description": "(Deprecated) Use 'avalonia.completion.buildConfigurationPreference'.",
             "deprecationMessage": "Use 'avalonia.completion.buildConfigurationPreference' instead.",
-            "scope": "workspace"
-          },
-          "avalonia.debounceFsEventsMs": {
-            "type": "number",
-            "default": 600,
-            "minimum": 100,
-            "maximum": 10000,
-            "description": "(Deprecated) Use 'avalonia.completion.debounceFsEventsMs'.",
-            "deprecationMessage": "Use 'avalonia.completion.debounceFsEventsMs' instead.",
             "scope": "workspace"
           },
           "avalonia.suppressXamlStylerRecommendation": {

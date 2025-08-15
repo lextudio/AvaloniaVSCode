@@ -92,23 +92,14 @@ public class CompletionHandler : CompletionHandlerBase
 
     async Task<Metadata?> InitializeCompletionEngineAsync(DocumentUri uri)
     {
-        // If metadata already loaded, return immediately (even if current project assembly missing)
-        if (_workspace.CompletionMetadata != null)
-            return _workspace.CompletionMetadata;
+        if (_workspace.ProjectInfo is not { IsAssemblyExist: true })
+            return null;
 
-        // Ensure workspace (ProjectInfo + attempt metadata) initialized
-        await _workspace.InitializeAsync(uri, _getServer()?.Client.ClientSettings.RootPath);
-        _logger.LogInformation("[Completion] Init proj={HasProj} asm={Asm} meta={Meta}",
-            _workspace.ProjectInfo != null, _workspace.ProjectInfo?.IsAssemblyExist, _workspace.CompletionMetadata != null);
-
-        // If we still lack metadata, log reasons
-        if (_workspace.CompletionMetadata == null)
+        if (_workspace.ProjectInfo.IsAssemblyExist && _workspace.CompletionMetadata == null)
         {
-            if (_workspace.ProjectInfo == null)
-                _logger.LogInformation("[Completion] No project for {Uri}", uri);
-            else if (!_workspace.ProjectInfo.IsAssemblyExist)
-                _logger.LogInformation("[Completion] Assembly missing for {Project}", _workspace.ProjectInfo.ProjectPath);
+            await _workspace.InitializeAsync(uri, _getServer()?.Client.ClientSettings.RootPath);
         }
+
         return _workspace.CompletionMetadata;
     }
 

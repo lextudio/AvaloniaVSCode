@@ -50,8 +50,9 @@ namespace AvaloniaLanguageServer.Models
         [JsonPropertyName("outputType")]
         public string OutputType { get; set; } = string.Empty;
 
-    [JsonPropertyName("normalizedOutputType")]
-    public string? NormalizedOutputType { get; set; }
+        // Normalized textual representation of OutputType (e.g. WinExe, Exe, Library)
+        [JsonPropertyName("normalizedOutputType")]
+        public string NormalizedOutputType { get; set; } = string.Empty;
 
         [JsonPropertyName("designerHostPath")]
         public string DesignerHostPath { get; set; } = string.Empty;

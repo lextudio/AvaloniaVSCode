@@ -24,22 +24,22 @@ public class ProjectInfo
 
         var files = Array.Empty<FileInfo>();
         var info = await Task.Run(() =>
+        {
+            while (root != current && files.Length == 0)
             {
-                while (root != current && files.Length == 0)
-                {
                     if (cancellationToken.IsCancellationRequested)
                         return (ProjectInfo?)null;
-                    var directory = new DirectoryInfo(current!);
-                    files = directory.GetFiles("*.csproj", SearchOption.TopDirectoryOnly);
-                    files = files.Concat(directory.GetFiles("*.fsproj", SearchOption.TopDirectoryOnly)).ToArray();
-                    if (files.Length != 0)
-                        break;
+                var directory = new DirectoryInfo(current!);
+                files = directory.GetFiles("*.csproj", SearchOption.TopDirectoryOnly);
+                files = files.Concat(directory.GetFiles("*.fsproj", SearchOption.TopDirectoryOnly)).ToArray();
+                if (files.Length != 0)
+                    break;
 
-                    current = Path.GetDirectoryName(current);
-                }
+                current = Path.GetDirectoryName(current);
+            }
 
-                return files.Length != 0 ? new ProjectInfo(files.FirstOrDefault()?.FullName, current) : null;
-            });
+            return files.Length != 0 ? new ProjectInfo(files.FirstOrDefault()?.FullName, current) : null;
+        });
 
         return info;
     }
@@ -162,7 +162,7 @@ public class ProjectInfo
                     {
                         var tfmCandidate = Path.Combine(rootedOutDir, tfm, assemblyName + ".dll");
                         if (File.Exists(tfmCandidate))
-                        {
+        {
                             Log.Information("[AsmLookup] Found MSBuild TFM candidate {Path}", tfmCandidate);
                             return tfmCandidate;
                         }

@@ -8,7 +8,7 @@ import { registerAvaloniaCommands } from "./commands";
 import { CommandManager } from "./commandManager";
 import * as util from "./util/Utilities";
 import { AppConstants, logger } from "./util/Utilities";
-import { getLastDiscoveryMeta, buildSolutionModel, getSolutionDataFile } from "./services/solutionParser";
+import { getLastDiscoveryMeta, buildSolutionModel, getSolutionDataFile, getSolutionModel } from "./services/solutionParser";
 
 let languageClient: lsp.LanguageClient | null = null;
 
@@ -229,148 +229,66 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	// Status bar item for assembly / model readiness
 	const status = vscode.window.createStatusBarItem("avaloniaAssemblyStatus", vscode.StatusBarAlignment.Left, 90);
-	status.text = "Avalonia: Initializing";
-	status.tooltip = "Avalonia language features waiting for assembly build";
+	status.text = '$(sync~spin) Avalonia: Checking...';
+	status.tooltip = 'Checking Avalonia completion metadata/cache status';
 	status.show();
 	context.subscriptions.push(status);
-
-	let lastAssemblyError: string | undefined;
-	async function refreshAssemblyStatus() {
-		try {
-			await buildSolutionModel(context, false);
-			const dataFile = await getSolutionDataFile(context);
-			if (dataFile && (await fs.pathExists(dataFile))) {
-				status.text = "Avalonia: Ready";
-				status.tooltip = "Avalonia completion metadata available";
-				lastAssemblyError = undefined;
-			} else {
-				status.text = "Avalonia: Build Needed";
-				status.tooltip = "Build the project (Run Previewer Assets) to enable completion";
-			}
-		} catch (e:any) {
-			lastAssemblyError = e?.message ?? String(e);
-			status.text = "Avalonia: Error";
-			status.tooltip = `Error building solution model: ${lastAssemblyError}`;
+	
+	function refreshAssemblyStatus() {
+		const solutionModel = getSolutionModel(context);
+		if (solutionModel) {
+			// Use preview icon and green background for ready
+			status.text = '$(file-media)';
+			status.tooltip = 'Avalonia completion metadata/cache is ready.';
+			status.backgroundColor = new vscode.ThemeColor('statusBarItem.background');
+			status.color = '#00C853'; // Green for ready
+		} else {
+			// Use preview icon and red background for not ready
+			status.text = '$(file-media)';
+			status.tooltip = 'Avalonia completion metadata/cache is not ready. Build the project to enable autocompletion.';
+			status.backgroundColor = new vscode.ThemeColor('statusBarItem.errorBackground');
+			status.color = '#D32F2F'; // Red for not ready
 		}
 	}
 
-	// Watch for changes to launch.json or project files with debounce to avoid rapid rebuild churn
-	if (vscode.workspace.workspaceFolders?.length) {
-		const root = vscode.workspace.workspaceFolders[0].uri.fsPath;
-		const launchWatcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(root, '.vscode/launch.json'));
-		const projWatcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(root, '**/*.{csproj,fsproj}'));
-		let rebuildTimer: NodeJS.Timeout | undefined;
-		let pendingEvents = 0;
-		const cfg = vscode.workspace.getConfiguration('avalonia');
-		let debounceMs = cfg.get<number>('completion.debounceFsEventsMs', cfg.get<number>('debounceFsEventsMs', 600));
-		const scheduleRebuild = () => {
-			pendingEvents++;
-			if (rebuildTimer) { clearTimeout(rebuildTimer); }
-			// Debounce delay using configured interval
-			rebuildTimer = setTimeout(async () => {
-				const events = pendingEvents; pendingEvents = 0;
-				status.text = 'Avalonia: Updating';
-				try {
-					await buildSolutionModel(context, true);
-					await refreshAssemblyStatus();
-					logger.appendLine(`Debounced rebuild executed after ${events} FS event(s).`);
-				} catch (err:any) {
-					logger.appendLine(`Debounced rebuild failed: ${err?.message ?? err}`);
-				}
-			}, debounceMs);
-		};
-		launchWatcher.onDidCreate(scheduleRebuild, null, context.subscriptions);
-		launchWatcher.onDidChange(scheduleRebuild, null, context.subscriptions);
-		launchWatcher.onDidDelete(scheduleRebuild, null, context.subscriptions);
-		projWatcher.onDidCreate(scheduleRebuild, null, context.subscriptions);
-		projWatcher.onDidChange(scheduleRebuild, null, context.subscriptions);
-		projWatcher.onDidDelete(scheduleRebuild, null, context.subscriptions);
-		context.subscriptions.push(launchWatcher, projWatcher, { dispose: () => rebuildTimer && clearTimeout(rebuildTimer) });
+	refreshAssemblyStatus();
+
+	// Update status bar after solution build or asset creation
+	context.subscriptions.push(vscode.commands.registerCommand('avalonia.updateCompletionStatusBar', () => {
 		refreshAssemblyStatus();
-	}
-
-	// Invalidate metadata cache command (notify server to clear any in-memory state + delete cache files heuristically)
-	context.subscriptions.push(vscode.commands.registerCommand('avalonia.invalidateMetadataCache', async () => {
-		try {
-			await languageClient?.sendNotification('avalonia/invalidateMetadataCache');
-			// Best effort: delete temp files matching pattern locally
-			const tmp = await fs.readdir(require('os').tmpdir());
-			let removed = 0;
-			for (const f of tmp) {
-				if (f.startsWith('avalonia-meta-') && f.endsWith('.avalonia-metadata.json')) {
-					try { await fs.remove(require('path').join(require('os').tmpdir(), f)); removed++; } catch {}
-				}
-			}
-			vscode.window.showInformationMessage(`Avalonia metadata cache invalidated (${removed} file(s) removed).`);
-		} catch (e:any) {
-			vscode.window.showErrorMessage(`Failed to invalidate metadata cache: ${e?.message ?? e}`);
-		}
 	}));
+
+	// Listen for workspace changes that may affect metadata
+	vscode.workspace.onDidSaveTextDocument((document) => {
+		if (util.isAvaloniaFile(document)) {
+			refreshAssemblyStatus();
+		}
+	});
+
 
 	languageClient = await createLanguageService();
 
-	// Rebuild model command
-	context.subscriptions.push(vscode.commands.registerCommand("avalonia.rebuildSolutionModel", async () => {
-		status.text = "Avalonia: Updating";
+    // Rebuild model command
+	context.subscriptions.push(vscode.commands.registerCommand('avalonia.buildSolutionModel', async () => {
+		status.backgroundColor = new vscode.ThemeColor('statusBarItem.background');
+		status.color = '#00C853'; // Green for in progress
 		try {
-			await buildSolutionModel(context, true);
-			await refreshAssemblyStatus();
-			vscode.window.showInformationMessage("Solution model rebuilt.");
+			await buildSolutionModel(context, false);
+			refreshAssemblyStatus();
 		} catch (e:any) {
-			vscode.window.showErrorMessage(`Failed to rebuild: ${e?.message ?? e}`);
+			vscode.window.showErrorMessage(`Failed to rebuild: ${e.message}`);
+			status.backgroundColor = new vscode.ThemeColor('statusBarItem.errorBackground');
+			status.color = '#D32F2F'; // Red for error
 		}
 	}));
 
-	// Show chosen project (executable) from language server (preferred) or fallback to solution model JSON
-	context.subscriptions.push(vscode.commands.registerCommand("avalonia.showChosenProject", async () => {
-		try {
-			let shown = false;
-			if (languageClient) {
-				try {
-					const resp:any = await languageClient.sendRequest("avalonia/chosenProject", "");
-					if (resp && resp.found) {
-						vscode.window.showInformationMessage(`Executable project: ${resp.name}\nOutputType: ${resp.outputType}${resp.normalizedOutputType && resp.normalizedOutputType !== resp.outputType ? ' (normalized: ' + resp.normalizedOutputType + ')' : ''}\nTargetPath: ${resp.targetPath || '(none)'}\nDesignerHostPath: ${resp.designerHostPath || '(none)'}`);
-						shown = true;
-					}
-				} catch {}
-			}
-			if (shown) { return; }
-			const p = await getSolutionDataFile(context);
-			if (!p || !(await fs.pathExists(p))) {
-				vscode.window.showWarningMessage("Solution model JSON not found.");
-				return;
-			}
-			const json = JSON.parse(await fs.readFile(p, 'utf8'));
-			const projects: any[] = json.projects || [];
-			// NOTE: Original regex used inline case-insensitive group syntax /^(?i:WinExe|Exe)$/ which is invalid in JavaScript.
-			// Replace with equivalent using the 'i' flag. Simplified alternation (Win)?Exe.
-			const exe = projects.find(pr => /^(?:Win)?Exe$/i.test(pr.normalizedOutputType || pr.outputType)) || projects.find(pr => pr.targetPath);
-			if (!exe) {
-				vscode.window.showInformationMessage("No executable / targetPath project detected in model.");
-				return;
-			}
-			vscode.window.showInformationMessage(`Executable project: ${exe.name}\nOutputType: ${exe.outputType}${exe.normalizedOutputType && exe.normalizedOutputType !== exe.outputType ? ' (normalized: ' + exe.normalizedOutputType + ')' : ''}\nTargetPath: ${exe.targetPath || '(none)'}\nDesignerHostPath: ${exe.designerHostPath || '(none)'}`);
-		} catch (e:any) {
-			vscode.window.showErrorMessage(`Failed to read chosen project: ${e?.message ?? e}`);
-		}
-	}));
-
-	// Toggle verbose logs (updates config which triggers restart)
+		// Toggle verbose logs (updates config which triggers restart)
 	context.subscriptions.push(vscode.commands.registerCommand("avalonia.toggleVerboseLogs", async () => {
 		const cfg = vscode.workspace.getConfiguration('avalonia');
 		const current = cfg.get<boolean>('trace.verbose', cfg.get<boolean>('verboseLogs', false));
 		await cfg.update('trace.verbose', !current, vscode.ConfigurationTarget.Global);
 		await cfg.update('verboseLogs', !current, vscode.ConfigurationTarget.Global); // legacy sync
 		vscode.window.showInformationMessage(`Avalonia verbose logs ${!current ? 'enabled' : 'disabled'} (server will restart).`);
-	}));
-
-	// Show last assembly resolution error
-	context.subscriptions.push(vscode.commands.registerCommand("avalonia.showAssemblyResolutionError", () => {
-		if (lastAssemblyError) {
-			vscode.window.showErrorMessage(lastAssemblyError, { modal: true });
-		} else {
-			vscode.window.showInformationMessage("No assembly resolution errors recorded.");
-		}
 	}));
 
 	try {

@@ -63,29 +63,23 @@ Rich syntax highlighter and contextual code complete will make it lot easier to 
 
 ![Code completion](media/AutoCompleteRM.png)
 
-### Performance & Caching
-
-The extension caches extracted XAML metadata per built assembly in your OS temp directory to speed up cold starts. If you suspect stale data (new controls not appearing), use the command palette command:
-
-`Avalonia: Invalidate Avalonia metadata cache`
-
-It will remove cached metadata so the next completion request rebuilds it.
-
 ### Useful Commands
 
-- `Avalonia: Show solution discovery info`
-- `Avalonia: Open solution model JSON`
-- `Avalonia: Rebuild solution model`
-- `Avalonia: Show chosen executable project`
-- `Avalonia: Invalidate Avalonia metadata cache`
-- `Avalonia: Toggle verbose Avalonia logs`
+- `Avalonia: Toggle verbose Avalonia logs` (`avalonia.toggleVerboseLogs`)
+- `Avalonia: Show preview` (`avalonia.showPreviewToSide`)
+- `Avalonia: Create previewer assets` (`avalonia.createPreviewerAssets`)
+- `Avalonia: Create a new Avalonia Project` (`avalonia.newProject`)
+- `Avalonia: Show solution discovery info` (`avalonia.showSolutionDiscoveryInfo`)
+- `Avalonia: Open solution model JSON` (`avalonia.openSolutionModelJson`)
 
 ### Settings Highlights
 
-- `avalonia.buildConfigurationPreference` – Assembly resolution preference (Debug / Release / Auto)
-- `avalonia.verboseLogs` – Detailed assembly probing & metadata diagnostics
-- `avalonia.debounceFsEventsMs` – Debounce for project/launch.json changes before model rebuild
-- `axaml.trace.server` – LSP protocol tracing (messages / verbose)
+- `avalonia.completion.buildConfigurationPreference` – Preferred build configuration for completion (Debug / Release / Auto)
+- `avalonia.trace.verbose` – Enable verbose Avalonia server side logs (assembly scanning, metadata fallback)
+- `avalonia.trace.server` – LSP protocol tracing (messages / verbose)
+- `avalonia.misc.suppressXamlStylerRecommendation` – Suppress prompt recommending XAML Styler extension
+- `avalonia.previewer.emitBinlog` – Emit MSBuild binary log when building previewer assets
+- `avalonia.previewer.runDotnetInfo` – Run 'dotnet --info' before building previewer assets
 
 Copyright (c) 2023 AvaloniaUI  
 Copyright (c) 2025 LeXtudio Inc.  

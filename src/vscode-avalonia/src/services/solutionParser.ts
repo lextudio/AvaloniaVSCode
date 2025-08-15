@@ -11,8 +11,6 @@ import { spawn } from "child_process";
 import { AppConstants, logger } from "../util/Utilities";
 import { getDotnetRuntimePath } from "../runtimeManager";
 
-// Use the active extension context path; avoid hard-coded legacy id
-
 /**
  * Builds the solution model by parsing the solution file and updating the workspace state.
  * If the output file already exists and `force` is false, the function does nothing.
