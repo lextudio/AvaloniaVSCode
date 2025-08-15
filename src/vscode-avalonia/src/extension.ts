@@ -34,10 +34,60 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	}
 
+	// One-time configuration migration notice (legacy -> categorized keys)
+	try {
+		const migrationFlag = 'avalonia.configMigration.v1';
+		if (!context.globalState.get<boolean>(migrationFlag, false)) {
+			interface Mapping { oldKey: string; newKey: string; }
+			const mappings: Mapping[] = [
+				{ oldKey: 'avalonia.verboseLogs', newKey: 'avalonia.trace.verbose' },
+				{ oldKey: 'avalonia.buildEmitBinlog', newKey: 'avalonia.previewer.emitBinlog' },
+				{ oldKey: 'avalonia.buildRunDotnetInfo', newKey: 'avalonia.previewer.runDotnetInfo' },
+				{ oldKey: 'avalonia.buildConfigurationPreference', newKey: 'avalonia.completion.buildConfigurationPreference' },
+				{ oldKey: 'avalonia.debounceFsEventsMs', newKey: 'avalonia.completion.debounceFsEventsMs' },
+				{ oldKey: 'avalonia.suppressXamlStylerRecommendation', newKey: 'avalonia.misc.suppressXamlStylerRecommendation' },
+				{ oldKey: 'axaml.trace.server', newKey: 'avalonia.trace.server' }
+			];
+			const cfg = vscode.workspace.getConfiguration();
+			const migrated: string[] = [];
+			for (const m of mappings) {
+				// Skip if new key already explicitly set anywhere
+				const newInspect = cfg.inspect<any>(m.newKey);
+				if (newInspect && (newInspect.globalValue !== undefined || newInspect.workspaceValue !== undefined || newInspect.workspaceFolderValue !== undefined)) {
+					continue;
+				}
+				const oldInspect = cfg.inspect<any>(m.oldKey);
+				if (!oldInspect) { continue; }
+				const apply = async (value: any, scope: vscode.ConfigurationTarget) => {
+					if (value !== undefined) {
+						await cfg.update(m.newKey, value, scope);
+						migrated.push(`${m.oldKey} → ${m.newKey}`);
+					}
+				};
+				// Preserve per-scope values if present
+				if (oldInspect.globalValue !== undefined) { await apply(oldInspect.globalValue, vscode.ConfigurationTarget.Global); }
+				if (oldInspect.workspaceValue !== undefined) { await apply(oldInspect.workspaceValue, vscode.ConfigurationTarget.Workspace); }
+				if (oldInspect.workspaceFolderValue !== undefined) { await apply(oldInspect.workspaceFolderValue, vscode.ConfigurationTarget.WorkspaceFolder); }
+			}
+			if (migrated.length) {
+				const detail = migrated.join('\n');
+				vscode.window.showInformationMessage('Avalonia settings reorganized. Legacy keys migrated to new categories.', 'View Details', 'Dismiss')
+					.then(choice => {
+						if (choice === 'View Details') {
+							vscode.window.showInformationMessage(detail, { modal: true, detail });
+						}
+					});
+			}
+			await context.globalState.update(migrationFlag, true);
+		}
+	} catch (e:any) {
+		logger.appendLine(`Settings migration failed: ${e?.message ?? e}`);
+	}
+
 	// Recommend XAML Styler extension if not installed and user hasn't suppressed recommendation
 	try {
 		const stylerId = "dabbinavo.xamlstyler";
-		const suppress = vscode.workspace.getConfiguration().get<boolean>("avalonia.suppressXamlStylerRecommendation", false);
+		const suppress = vscode.workspace.getConfiguration().get<boolean>("avalonia.misc.suppressXamlStylerRecommendation", vscode.workspace.getConfiguration().get<boolean>("avalonia.suppressXamlStylerRecommendation", false));
 		if (!suppress && !vscode.extensions.getExtension(stylerId)) {
 			const choice = await vscode.window.showInformationMessage(
 				"For formatting AXAML you can optionally install 'XAML Styler'. Would you like to view it?",
@@ -47,6 +97,8 @@ export async function activate(context: vscode.ExtensionContext) {
 			if (choice === "Show Extension") {
 				await vscode.commands.executeCommand("workbench.extensions.search", stylerId);
 			} else if (choice === "Don't Show Again") {
+				// Update both new and old keys for consistency
+				await vscode.workspace.getConfiguration().update("avalonia.misc.suppressXamlStylerRecommendation", true, vscode.ConfigurationTarget.Global);
 				await vscode.workspace.getConfiguration().update("avalonia.suppressXamlStylerRecommendation", true, vscode.ConfigurationTarget.Global);
 			}
 		}
@@ -210,7 +262,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		let rebuildTimer: NodeJS.Timeout | undefined;
 		let pendingEvents = 0;
 		const cfg = vscode.workspace.getConfiguration('avalonia');
-		let debounceMs = cfg.get<number>('debounceFsEventsMs', 600);
+		let debounceMs = cfg.get<number>('completion.debounceFsEventsMs', cfg.get<number>('debounceFsEventsMs', 600));
 		const scheduleRebuild = () => {
 			pendingEvents++;
 			if (rebuildTimer) { clearTimeout(rebuildTimer); }
@@ -306,8 +358,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	// Toggle verbose logs (updates config which triggers restart)
 	context.subscriptions.push(vscode.commands.registerCommand("avalonia.toggleVerboseLogs", async () => {
 		const cfg = vscode.workspace.getConfiguration('avalonia');
-		const current = cfg.get<boolean>('verboseLogs', false);
-		await cfg.update('verboseLogs', !current, vscode.ConfigurationTarget.Global);
+		const current = cfg.get<boolean>('trace.verbose', cfg.get<boolean>('verboseLogs', false));
+		await cfg.update('trace.verbose', !current, vscode.ConfigurationTarget.Global);
+		await cfg.update('verboseLogs', !current, vscode.ConfigurationTarget.Global); // legacy sync
 		vscode.window.showInformationMessage(`Avalonia verbose logs ${!current ? 'enabled' : 'disabled'} (server will restart).`);
 	}));
 
@@ -329,7 +382,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	// React to configuration changes for build configuration preference
 	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async e => {
-		if (e.affectsConfiguration('avalonia.buildConfigurationPreference') || e.affectsConfiguration('avalonia.verboseLogs')) {
+		if (e.affectsConfiguration('avalonia.completion.buildConfigurationPreference') || e.affectsConfiguration('avalonia.buildConfigurationPreference') || e.affectsConfiguration('avalonia.trace.verbose') || e.affectsConfiguration('avalonia.verboseLogs')) {
 			try {
 				logger.appendLine('Restarting language server due to configuration change...');
 				await languageClient?.stop();

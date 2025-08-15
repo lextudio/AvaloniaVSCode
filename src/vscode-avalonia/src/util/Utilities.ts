@@ -31,10 +31,18 @@ export function getFileName(filePath: string): string {
  * @returns executable project
  */
 export function getExecutableProject(solution: sm.Solution): sm.Project | undefined {
-	const projs = solution.projects.filter((p) => p.outputType === "WinExe");
-	const proj = projs.length > 0 ? projs[0] : undefined;
-
-	return proj;
+	// Accept WinExe or Exe (cross-platform). Prefer WinExe if present.
+	const matches = solution.projects.filter(
+		(p) => {
+			const type = (p.normalizedOutputType || p.outputType || "").toString();
+			return /^(?:Win)?Exe$/i.test(type);
+		}
+	);
+	if (!matches.length) {
+		return undefined;
+	}
+	const winExe = matches.find(p => /WinExe/i.test((p.normalizedOutputType || p.outputType || "").toString()));
+	return winExe ?? matches[0];
 }
 /**
  * Returns the file details from solution model
@@ -84,7 +92,8 @@ export class AppConstants {
 	static readonly showPreviewToSideCommand = "avalonia.showPreviewToSide";
 	static readonly previewerAssetsCommand = "avalonia.createPreviewerAssets";
 
-	static readonly previewerPanelViewType = "avaloniaPreviewer";
+	// Must match WebPreviewerPanel.viewType so tab lookup works
+	static readonly previewerPanelViewType = "webPreviewer";
 	static readonly winExe = "WinExe";
 
 	static readonly solutionData = "avalonia.solutionData";

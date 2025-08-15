@@ -147,38 +147,105 @@
         "title": "Avalonia",
         "type": "object",
         "properties": {
-          "axaml.trace.server": {
+          "avalonia.trace.server": {
             "type": "string",
-            "enum": [
-              "off",
-              "messages",
-              "verbose"
-            ],
+            "enum": ["off", "messages", "verbose"],
             "default": "messages",
-            "description": "Traces the communication between VS Code and the language server."
+            "description": "Trace level for language server protocol traffic.",
+            "scope": "window"
           },
-          "avalonia.suppressXamlStylerRecommendation": {
+          "avalonia.trace.verbose": {
             "type": "boolean",
             "default": false,
-            "description": "Suppress recommendation prompt to install the optional XAML Styler extension (dabbinavo.xamlstyler)."
+            "description": "Enable verbose Avalonia server side logs (assembly scanning, metadata fallback).",
+            "scope": "window"
+          },
+          "avalonia.previewer.emitBinlog": {
+            "type": "boolean",
+            "default": false,
+            "description": "Emit an MSBuild binary log (msbuild.binlog) when building previewer assets.",
+            "scope": "workspace"
+          },
+          "avalonia.previewer.runDotnetInfo": {
+            "type": "boolean",
+            "default": false,
+            "description": "Run 'dotnet --info' before building previewer assets to capture environment diagnostics.",
+            "scope": "workspace"
+          },
+          "avalonia.completion.buildConfigurationPreference": {
+            "type": "string",
+            "enum": ["Debug", "Release", "Auto"],
+            "default": "Auto",
+            "description": "Preferred build configuration for locating assemblies used by completion (Auto tries Debug then Release).",
+            "scope": "workspace"
+          },
+          "avalonia.completion.debounceFsEventsMs": {
+            "type": "number",
+            "default": 600,
+            "minimum": 100,
+            "maximum": 10000,
+            "description": "Debounce interval (ms) for project / launch file change events before rebuilding solution model.",
+            "scope": "workspace"
+          },
+          "avalonia.misc.suppressXamlStylerRecommendation": {
+            "type": "boolean",
+            "default": false,
+            "description": "Suppress prompt recommending the optional XAML Styler extension (dabbinavo.xamlstyler).",
+            "scope": "window"
+          },
+          
+          "axaml.trace.server": {
+            "type": "string",
+            "enum": ["off", "messages", "verbose"],
+            "default": "messages",
+            "description": "(Deprecated) Use 'avalonia.trace.server'.",
+            "deprecationMessage": "Use 'avalonia.trace.server' instead.",
+            "scope": "window"
+          },
+          "avalonia.verboseLogs": {
+            "type": "boolean",
+            "default": false,
+            "description": "(Deprecated) Use 'avalonia.trace.verbose'.",
+            "deprecationMessage": "Use 'avalonia.trace.verbose' instead.",
+            "scope": "window"
+          },
+          "avalonia.buildEmitBinlog": {
+            "type": "boolean",
+            "default": false,
+            "description": "(Deprecated) Use 'avalonia.previewer.emitBinlog'.",
+            "deprecationMessage": "Use 'avalonia.previewer.emitBinlog' instead.",
+            "scope": "workspace"
+          },
+          "avalonia.buildRunDotnetInfo": {
+            "type": "boolean",
+            "default": false,
+            "description": "(Deprecated) Use 'avalonia.previewer.runDotnetInfo'.",
+            "deprecationMessage": "Use 'avalonia.previewer.runDotnetInfo' instead.",
+            "scope": "workspace"
           },
           "avalonia.buildConfigurationPreference": {
             "type": "string",
             "enum": ["Debug", "Release", "Auto"],
             "default": "Auto",
-            "description": "Preferred build configuration when locating assemblies. Auto = try Debug then Release."
-          },
-          "avalonia.verboseLogs": {
-            "type": "boolean",
-            "default": false,
-            "description": "Enable verbose Avalonia language server logs (assembly scanning, metadata fallback)."
+            "description": "(Deprecated) Use 'avalonia.completion.buildConfigurationPreference'.",
+            "deprecationMessage": "Use 'avalonia.completion.buildConfigurationPreference' instead.",
+            "scope": "workspace"
           },
           "avalonia.debounceFsEventsMs": {
             "type": "number",
             "default": 600,
             "minimum": 100,
             "maximum": 10000,
-            "description": "Debounce interval in milliseconds for project/launch.json file change events before rebuilding the solution model."
+            "description": "(Deprecated) Use 'avalonia.completion.debounceFsEventsMs'.",
+            "deprecationMessage": "Use 'avalonia.completion.debounceFsEventsMs' instead.",
+            "scope": "workspace"
+          },
+          "avalonia.suppressXamlStylerRecommendation": {
+            "type": "boolean",
+            "default": false,
+            "description": "(Deprecated) Use 'avalonia.misc.suppressXamlStylerRecommendation'.",
+            "deprecationMessage": "Use 'avalonia.misc.suppressXamlStylerRecommendation' instead.",
+            "scope": "window"
           }
         }
       }

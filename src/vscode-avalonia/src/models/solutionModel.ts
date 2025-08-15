@@ -3,6 +3,8 @@ export interface Project {
 	path: string;
 	targetPath: string;
 	outputType: string;
+	// Normalized textual output type (present in parser JSON as NormalizedOutputType)
+	normalizedOutputType?: string;
 	designerHostPath: string;
 	targetFramework: string;
 	depsFilePath: string;
