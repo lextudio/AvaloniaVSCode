@@ -24,6 +24,7 @@ export async function buildSolutionModel(context: vscode.ExtensionContext, force
 
 	if (!isExist || force) {
 		logger.info(`[SolutionModel] parsing required (exists=${isExist}, force=${force})`);
+		logger.info(`[SolutionModel] Starting asset generation and solution parsing.`);
 		await parseSolution(context);
 		return;
 	}
@@ -73,6 +74,7 @@ export async function purgeSolutionDataFile() {
 function updateSolutionModel(context: vscode.ExtensionContext, jsonContent: string) {
 	const data = JSON.parse(jsonContent);
 	context.workspaceState.update(AppConstants.solutionData, data);
+	logger.info(`[SolutionModel] Updated workspaceState with solutionData: ${JSON.stringify(data, null, 2)}`);
 }
 
 interface SolutionDiscoveryMeta {
@@ -196,6 +198,7 @@ async function isOutputExists(context?: vscode.ExtensionContext) {
 async function parseSolution(context: vscode.ExtensionContext): Promise<string> {
 	const solutionPath = await getSolutionFile();
 	if (!solutionPath) {
+		logger.error("Could not find solution file. Previewer asset generation will fail.");
 		throw new Error("Could not find solution file.");
 	}
 

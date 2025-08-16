@@ -18,10 +18,13 @@ export class PreviewerProcess implements Command {
 		util.logger.info(`Command ${this.id}, ${mainUri}`);
 		let result: PreviewerData = { file: mainUri! };
 		const previewParams = this._context.workspaceState.get<PreviewerParams>(AppConstants.previewerParamState);
+		util.logger.info(`PreviewerParams: ${JSON.stringify(previewParams, null, 2)}`);
+		if (!previewParams || Object.values(previewParams).some(v => !v)) {
+			util.logger.error('PreviewerParams are missing or empty. Check asset generation and solution parsing steps.');
+		}
 		if (previewParams && mainUri) {
 			result = await this.startPreviewerProcess(previewParams, mainUri);
 		}
-
 		return result;
 	}
 
@@ -101,12 +104,19 @@ export class PreviewerProcess implements Command {
 	}
 
 	canStartPreviewerProcess(previewParams: PreviewerParams) {
+		util.logger.info('Checking existence of previewer assets:');
+		util.logger.info(`  previewerPath: ${previewParams.previewerPath} => ${fs.existsSync(previewParams.previewerPath)}`);
+		util.logger.info(`  projectRuntimeConfigFilePath: ${previewParams.projectRuntimeConfigFilePath} => ${fs.existsSync(previewParams.projectRuntimeConfigFilePath)}`);
+		util.logger.info(`  projectDepsFilePath: ${previewParams.projectDepsFilePath} => ${fs.existsSync(previewParams.projectDepsFilePath)}`);
+		util.logger.info(`  targetPath: ${previewParams.targetPath} => ${fs.existsSync(previewParams.targetPath)}`);
 		const result =
 			fs.existsSync(previewParams.previewerPath) &&
 			fs.existsSync(previewParams.projectRuntimeConfigFilePath) &&
 			fs.existsSync(previewParams.projectDepsFilePath) &&
 			fs.existsSync(previewParams.targetPath);
-
+		if (!result) {
+			util.logger.error('One or more previewer assets are missing. See above for details.');
+		}
 		return result;
 	}
 	constructor(
