@@ -75,7 +75,8 @@ public class Workspace
         return _metadataReader.GetForTargetAssembly(provider);
     }
 
-    string? SolutionName(string RootPath)
+    // TODO: prefer getting Solution from csdevkit (roslyn language server) or OmniSharp/Ionide, or fallback to our impl.
+    static string? SolutionName(string RootPath)
     {
         // Prefer .slnx over .sln if present. Pick the first (closest) file.
         IEnumerable<string> Enumerate(string pattern) => Directory.EnumerateFiles(RootPath, pattern, SearchOption.AllDirectories);
