@@ -27,7 +27,8 @@
     "theme": "dark"
   },
   "bugs": {
-    "url": "https://github.com/lextudio/AvaloniaVSCode/issues"
+    "url": "https://github.com/lextudio/AvaloniaVSCode/issues",
+    "email": "support@lextudio.com"
   },
   "repository": {
     "type": "git",
