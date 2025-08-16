@@ -1,6 +1,6 @@
 {
     "name": "AXAML",
-    "scopeName": "source.AXAML",
+    "scopeName": "source.axaml",
     "fileTypes": [
         "axaml"
     ],
@@ -336,7 +336,11 @@
                             "name": "entity.other.attribute-name.localname.xml"
                         }
                     },
-                    "match": "(?:^|\\s+)(?:([-\\w.]+)((:)))?([-\\w.:]+)\\s*="
+                    "match": "(?:^|\\s+)(?:([-\\w.]+)((:)))?([-\\w.:]+)\\s*"
+                },
+                {
+                    "match": "=",
+                    "name": "punctuation.separator.key-value.xml"
                 },
                 {
                     "include": "#doublequotedString"

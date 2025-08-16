@@ -48,7 +48,7 @@
     ],
     "languages": [
       {
-        "id": "AXAML",
+        "id": "axaml",
         "aliases": [
           "Avalonia XAML",
           "axaml",
@@ -67,8 +67,8 @@
     ],
     "grammars": [
       {
-        "language": "AXAML",
-        "scopeName": "source.AXAML",
+        "language": "axaml",
+        "scopeName": "source.axaml",
         "path": "./AXAML.tmLanguage.json"
       }
     ],
@@ -109,7 +109,7 @@
     "menus": {
       "editor/title": [
         {
-          "when": "editorLangId == AXAML",
+          "when": "editorLangId == axaml",
           "command": "avalonia.showPreviewToSide",
           "group": "navigation"
         }
@@ -117,7 +117,7 @@
       "commandPalette": [
         {
           "command": "avalonia.showPreviewToSide",
-          "when": "resourceLangId == AXAML",
+          "when": "resourceLangId == axaml",
           "group": "Avalonia"
         }
       ]
