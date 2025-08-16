@@ -1,5 +1,11 @@
 # Change Log
 
+## [11.0.39] - 16 August 2025
+
+Highlights:
+
+- SolutionParser now supports `<TargetFrameworks>` and logs warnings for unsupported targets.
+
 ## [11.0.38] - 15 August 2025
 
 Highlights:
