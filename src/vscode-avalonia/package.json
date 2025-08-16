@@ -88,8 +88,7 @@
         "command": "avalonia.newProject",
         "title": "Create a new Avalonia Project",
         "category": "Avalonia"
-      }
-      ,
+      },
       {
         "command": "avalonia.showSolutionDiscoveryInfo",
         "title": "Show solution discovery info",
@@ -129,7 +128,11 @@
         "properties": {
           "avalonia.trace.server": {
             "type": "string",
-            "enum": ["off", "messages", "verbose"],
+            "enum": [
+              "off",
+              "messages",
+              "verbose"
+            ],
             "default": "messages",
             "description": "Trace level for language server protocol traffic.",
             "scope": "window"
@@ -154,7 +157,11 @@
           },
           "avalonia.completion.buildConfigurationPreference": {
             "type": "string",
-            "enum": ["Debug", "Release", "Auto"],
+            "enum": [
+              "Debug",
+              "Release",
+              "Auto"
+            ],
             "default": "Auto",
             "description": "Preferred build configuration for locating assemblies used by completion (Auto tries Debug then Release).",
             "scope": "workspace"
@@ -165,10 +172,13 @@
             "description": "Suppress prompt recommending the optional XAML Styler extension (dabbinavo.xamlstyler).",
             "scope": "window"
           },
-          
           "axaml.trace.server": {
             "type": "string",
-            "enum": ["off", "messages", "verbose"],
+            "enum": [
+              "off",
+              "messages",
+              "verbose"
+            ],
             "default": "messages",
             "description": "(Deprecated) Use 'avalonia.trace.server'.",
             "deprecationMessage": "Use 'avalonia.trace.server' instead.",
@@ -197,7 +207,11 @@
           },
           "avalonia.buildConfigurationPreference": {
             "type": "string",
-            "enum": ["Debug", "Release", "Auto"],
+            "enum": [
+              "Debug",
+              "Release",
+              "Auto"
+            ],
             "default": "Auto",
             "description": "(Deprecated) Use 'avalonia.completion.buildConfigurationPreference'.",
             "deprecationMessage": "Use 'avalonia.completion.buildConfigurationPreference' instead.",
@@ -240,10 +254,13 @@
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
     "@vscode/test-electron": "^2.2.3",
-    "eslint": "^8.34.0",
-    "mocha": "^10.2.0",
     "esbuild": "^0.21.5",
-    "typescript": "^4.9.5"
+    "eslint": "^8.34.0",
+    "jest": "^30.0.5",
+    "mocha": "^10.2.0",
+    "typescript": "^4.9.5",
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.2.0"
   },
   "dependencies": {
     "@vscode/codicons": "^0.0.33",
