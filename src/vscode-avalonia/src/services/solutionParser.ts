@@ -9,7 +9,7 @@ import * as vscode from "vscode";
 import * as sln from "../models/solutionModel";
 import { spawn } from "child_process";
 
-import { logger } from "../util/Utilities";
+import { logger, getFileName } from "../util/Utilities";
 import { getDotnetRuntimePath } from "../runtimeManager";
 import AppConstants from "../util/Constants";
 
@@ -142,31 +142,26 @@ async function getSolutionFile(context?: vscode.ExtensionContext): Promise<strin
 			.map(f => ({ f, depth: f.fsPath.split(/[\\\/]/).length }))
 			.sort((a, b) => a.depth - b.depth || a.f.fsPath.localeCompare(b.f.fsPath));
 		matched.push(...foundFiles.map(f => f.fsPath));
-		if (sorted.length > 1) {
-			// Prompt user to pick
-			const tokenSource = new (class extends vscode.CancellationTokenSource {})();
-			try {
-				selected = await vscode.window.showQuickPick(
-					sorted.map(x => x.f.fsPath),
-					{
-						title: 'Choose Solution File',
-						canPickMany: false
-					} as vscode.QuickPickOptions,
-					tokenSource.token
-				);
-			} catch {}
-			finally {
-				tokenSource.dispose();
-			}
-			if (!selected) {
-				// User cancelled, fallback to first
-				selected = sorted[0].f.fsPath;
-			}
-			logger.info(`[SolutionDiscovery] multipleMatches chosen=${selected} total=${sorted.length}`);
-		} else {
-			selected = sorted[0].f.fsPath;
-			logger.info(`[SolutionDiscovery] chosen=${selected}`);
+		// Always show QuickPick, even if only one solution
+		const tokenSource = new (class extends vscode.CancellationTokenSource {})();
+		try {
+			selected = await vscode.window.showQuickPick(
+				sorted.map(x => x.f.fsPath),
+				{
+					title: 'Choose Solution File',
+					canPickMany: false
+				} as vscode.QuickPickOptions,
+				tokenSource.token
+			);
+		} catch {}
+		finally {
+			tokenSource.dispose();
 		}
+		if (!selected) {
+			// User cancelled, fallback to first
+			selected = sorted[0].f.fsPath;
+		}
+		logger.info(`[SolutionDiscovery] chosen=${selected} total=${sorted.length}`);
 		await recordDiscovery(context, {
 			searchedPatterns: patterns,
 			matchedFiles: matched,
