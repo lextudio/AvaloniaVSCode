@@ -1,5 +1,11 @@
 # Change Log
 
+## [11.0.40] - 17 August 2025
+
+Highlights:
+
+- Refresh button in previewer menubar now uses iframe reloads.
+
 ## [11.0.39] - 16 August 2025
 
 Highlights:
