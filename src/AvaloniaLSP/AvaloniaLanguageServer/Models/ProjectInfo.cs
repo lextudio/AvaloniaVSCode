@@ -27,8 +27,8 @@ public class ProjectInfo
         {
             while (root != current && files.Length == 0)
             {
-                    if (cancellationToken.IsCancellationRequested)
-                        return (ProjectInfo?)null;
+                if (cancellationToken.IsCancellationRequested)
+                    return (ProjectInfo?)null;
                 var directory = new DirectoryInfo(current!);
                 files = directory.GetFiles("*.csproj", SearchOption.TopDirectoryOnly);
                 files = files.Concat(directory.GetFiles("*.fsproj", SearchOption.TopDirectoryOnly)).ToArray();
@@ -82,7 +82,7 @@ public class ProjectInfo
         }
 
         var assemblyBaseName = Path.GetFileNameWithoutExtension(ProjectPath);
-    var debugFirstOrder = GetOrderedConfigurations();
+        var debugFirstOrder = GetOrderedConfigurations();
         var triedConventions = new List<string>();
 
         // 2. Conventional bin/<Config>[/<TFM>[/<RID>]] search (cheap heuristic)
@@ -162,7 +162,7 @@ public class ProjectInfo
                     {
                         var tfmCandidate = Path.Combine(rootedOutDir, tfm, assemblyName + ".dll");
                         if (File.Exists(tfmCandidate))
-        {
+                        {
                             Log.Information("[AsmLookup] Found MSBuild TFM candidate {Path}", tfmCandidate);
                             return tfmCandidate;
                         }
@@ -244,14 +244,17 @@ public class ProjectInfo
             if (cancellationToken.IsCancellationRequested)
                 return result; // empty
 
-            var rx = new Regex(@"^(?<name>[A-Za-z0-9_]+)\s*=\s*(?<value>.*)$", RegexOptions.Compiled);
-            foreach (var line in stdout.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+            try
             {
-                var m = rx.Match(line.Trim());
-                if (m.Success)
+                using var doc = JsonDocument.Parse(stdout);
+                foreach (var prop in doc.RootElement.EnumerateObject())
                 {
-                    result[m.Groups["name"].Value] = m.Groups["value"].Value.Trim();
+                    result[prop.Name] = prop.Value.GetString() ?? string.Empty;
                 }
+            }
+            catch (JsonException ex)
+            {
+                Log.Information(ex, "[AsmLookup] Failed to parse MSBuild output as JSON for {Project}", projectPath);
             }
         }
         catch { }
@@ -296,13 +299,13 @@ public class ProjectInfo
         }
     }
 
-    static IEnumerable<string> EnumerateTargetFrameworks(Dictionary<string,string> props)
+    static IEnumerable<string> EnumerateTargetFrameworks(Dictionary<string, string> props)
     {
         if (props.TryGetValue("TargetFramework", out var single) && !string.IsNullOrWhiteSpace(single))
             yield return single.Trim();
         if (props.TryGetValue("TargetFrameworks", out var multi) && !string.IsNullOrWhiteSpace(multi))
         {
-            foreach (var part in multi.Split(new[]{';'}, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var part in multi.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
                 yield return part.Trim();
         }
     }
