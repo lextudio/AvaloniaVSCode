@@ -1,5 +1,12 @@
 # Change Log
 
+## [11.0.41] - 17 August 2025
+
+Highlights:
+
+- Extension and parser now robustly handle multi-targeting and AvaloniaXaml asset discovery.
+- Status bar refactored to show project and solution information.
+
 ## [11.0.40] - 17 August 2025
 
 Highlights:
