@@ -31,6 +31,7 @@ export namespace AppConstants {
 
     export const solutionData = "avalonia.solutionData";
     export const solutionDiscoveryMeta = "avalonia.solutionDiscoveryMeta";
+    export const selectedExecutableProject = "avalonia.selectedExecutableProject";
 
     export const updatePreviewerContent = "avalonia.updatePreviewerContext";
 

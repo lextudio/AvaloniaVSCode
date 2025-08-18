@@ -6,6 +6,7 @@ import { PreviewerProcess } from "./previewerProcess";
 import { PreviewProcessManager } from "../previewProcessManager";
 import { UpdatePreviewerContext } from "./updatePreviewerContent";
 import { CreateNewProject } from "./createNewProject";
+import { SelectAvaloniaProject } from "./SelectAvaloniaProject";
 
 const processManager = new PreviewProcessManager();
 
@@ -18,6 +19,7 @@ export function registerAvaloniaCommands(
 	commandManager.register(new CreatePreviewerAssets(context));
 	commandManager.register(new PreviewerProcess(context, processManager));
 	commandManager.register(new UpdatePreviewerContext(context));
+	commandManager.register(new SelectAvaloniaProject(context));
 
 	return commandManager;
 }

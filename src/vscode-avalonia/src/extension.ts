@@ -307,7 +307,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		"avalonia.openSolutionModelJson",
 		async () => {
 			try {
-				const p = await getSolutionDataFile(context);
+				const p = await getSolutionDataFile();
 				if (!p || !(await fs.pathExists(p))) {
 					vscode.window.showWarningMessage(
 						"Solution model JSON not found yet. Run 'Show solution discovery info' first."
@@ -408,7 +408,51 @@ export async function activate(context: vscode.ExtensionContext) {
 		axamlSelector
 	);
 	solutionStatus.name = "Avalonia Solution Selection";
+	solutionStatus.severity = vscode.LanguageStatusSeverity.Information;
+	solutionStatus.command = {
+		title: "Select",
+		command: "avalonia.selectSolutionFile",
+	};
 	context.subscriptions.push(solutionStatus);
+
+	// Create Language Status Item for AXAML selected project
+	let axamlProjectStatusItem = vscode.languages.createLanguageStatusItem(
+		"avalonia.selectedProject",
+		"axaml"
+	);
+	axamlProjectStatusItem.name = "Avalonia Project";
+	axamlProjectStatusItem.severity = vscode.LanguageStatusSeverity.Information;
+	context.subscriptions.push(axamlProjectStatusItem);
+
+	// Helper to update status item
+	function updateAxamlProjectStatus() {
+		if (!axamlProjectStatusItem) {
+			return;
+		}
+		const selected = context.workspaceState.get<any>(
+			AppConstants.selectedExecutableProject
+		);
+		if (selected && selected.name) {
+			axamlProjectStatusItem.text = `$(briefcase) Project: ${selected.name}`;
+		} else {
+			axamlProjectStatusItem.text = "$(briefcase) No project selected";
+		}
+	}
+	updateAxamlProjectStatus();
+
+	// Register command to re-select project
+	context.subscriptions.push(
+		vscode.commands.registerCommand("avalonia.selectProject", async () => {
+			await vscode.commands.executeCommand(
+				AppConstants.selectedExecutableProject
+			);
+			updateAxamlProjectStatus();
+		})
+	);
+	axamlProjectStatusItem.command = {
+		title: "Select",
+		command: "avalonia.selectProject",
+	};
 
 	function getSelectedSolutionFileName(): string {
 		const meta = getLastDiscoveryMeta(context);
@@ -469,11 +513,16 @@ export async function activate(context: vscode.ExtensionContext) {
 		solutionStatus.text = solutionFileName
 			? `$(file-code) Solution: ${solutionFileName}`
 			: "$(file-code) No solution selected";
-		solutionStatus.severity = vscode.LanguageStatusSeverity.Information;
-		solutionStatus.command = {
-			title: "Select",
-			command: "avalonia.selectSolutionFile",
-		};
+
+		// Selected project status item
+		const selected = context.workspaceState.get<any>(
+			AppConstants.selectedExecutableProject
+		);
+		if (selected && selected.name) {
+			axamlProjectStatusItem.text = `$(briefcase) Project: ${selected.name}`;
+		} else {
+			axamlProjectStatusItem.text = "$(briefcase) No project selected";
+		}
 	}
 
 	refreshLanguageStatus();

@@ -33,24 +33,17 @@ export function getFileName(filePath: string): string {
 }
 
 /**
- * Returns executable project from solution model
- * @param solution solution model
- * @returns executable project
+ * Returns all executable projects from solution model
  */
-export function getExecutableProject(solution: sm.Solution): sm.Project | undefined {
-	// Accept WinExe or Exe (cross-platform). Prefer WinExe if present.
-	const matches = solution.projects.filter(
+export function getExecutableProjects(solution: sm.Solution): sm.Project[] {
+	return solution.projects.filter(
 		(p) => {
 			const type = (p.normalizedOutputType || p.outputType || "").toString();
 			return /^(?:Win)?Exe$/i.test(type);
 		}
 	);
-	if (!matches.length) {
-		return undefined;
-	}
-	const winExe = matches.find(p => /WinExe/i.test((p.normalizedOutputType || p.outputType || "").toString()));
-	return winExe ?? matches[0];
 }
+
 /**
  * Returns the file details from solution model
  * @param file file path

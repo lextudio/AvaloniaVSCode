@@ -103,6 +103,11 @@
         "command": "avalonia.toggleVerboseLogs",
         "title": "Toggle verbose Avalonia logs",
         "category": "Avalonia"
+      },
+      {
+        "command": "avalonia.selectProject",
+        "title": "Select Avalonia Executable Project",
+        "category": "Avalonia"
       }
     ],
     "menus": {

@@ -20,7 +20,7 @@ import AppConstants from "../util/Constants";
  * @param force Whether to force the parsing of the solution file even if the output file already exists.
  */
 export async function buildSolutionModel(context: vscode.ExtensionContext, force: boolean = false) {
-	var { outputPath, isExist } = await isOutputExists(context);
+	var { outputPath, isExist } = await isOutputExists();
 
 	if (!isExist || force) {
 		logger.info(`[SolutionModel] parsing required (exists=${isExist}, force=${force})`);
@@ -50,8 +50,8 @@ export function getSolutionModel(context: vscode.ExtensionContext): sln.Solution
  * Returns the path to the solution data file.
  * @returns The path to the solution data file, or undefined if it doesn't exist.
  */
-export async function getSolutionDataFile(context?: vscode.ExtensionContext) {
-	const slnFile = await getSolutionFile(context);
+export async function getSolutionDataFile() {
+	const slnFile = await getSolutionFile();
 	if (!slnFile) {
 		logger.error("Could not find solution file.");
 		return;
@@ -191,13 +191,13 @@ export async function selectSolutionOnActivation(context: vscode.ExtensionContex
 	}
 }
 
-async function getSolutionFile(context?: vscode.ExtensionContext): Promise<string | undefined> {
+async function getSolutionFile(): Promise<string | undefined> {
 	// Only return the selected solution from workspace settings
-	return vscode.workspace.getConfiguration().get<string>("avalonia.selectedSolution");
+	return vscode.workspace.getConfiguration("avalonia").get<string>("selectedSolution");
 }
 
-async function isOutputExists(context?: vscode.ExtensionContext) {
-	const outputPath = await getSolutionDataFile(context);
+async function isOutputExists() {
+	const outputPath = await getSolutionDataFile();
 	logger.info(`[EXT - INFO] Solution data path: ${outputPath}`);
 	return { outputPath, isExist: fs.pathExistsSync(outputPath!) };
 }
