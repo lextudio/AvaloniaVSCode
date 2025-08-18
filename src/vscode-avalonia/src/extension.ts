@@ -13,6 +13,8 @@ import {
 	buildSolutionModel,
 	getSolutionDataFile,
 	getSolutionModel,
+	selectSolutionOnActivation,
+	setSelectedSolutionSetting,
 } from "./services/solutionParser";
 import AppConstants from "./util/Constants";
 
@@ -23,6 +25,8 @@ let languageClient: lsp.LanguageClient | null = null;
  */
 export async function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "Avalonia UI" is now active!');
+
+	await selectSolutionOnActivation(context);
 
 	// Warn about conflicting / legacy Avalonia extensions that should be uninstalled
 	const conflicting = [
@@ -415,9 +419,37 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 
 	async function triggerSolutionSelection() {
-		// Only force solution selection when explicitly triggered
-		await buildSolutionModel(context, true);
-		refreshLanguageStatus();
+		// Show QuickPick to change solution
+		const patterns = ["**/*.slnx", "**/*.sln"];
+		let foundFiles: vscode.Uri[] = [];
+		for (const pattern of patterns) {
+			const files = await vscode.workspace.findFiles(
+				pattern,
+				undefined,
+				50
+			);
+			if (files.length > 0) {
+				foundFiles.push(...files);
+			}
+		}
+		if (foundFiles.length > 0) {
+			const sorted = foundFiles
+				.map((f) => ({ f, depth: f.fsPath.split(/[\\\/]/).length }))
+				.sort(
+					(a, b) =>
+						a.depth - b.depth ||
+						a.f.fsPath.localeCompare(b.f.fsPath)
+				);
+			const solutionPaths = sorted.map((x) => x.f.fsPath);
+			const selected = await vscode.window.showQuickPick(solutionPaths, {
+				title: "Change Solution File",
+				canPickMany: false,
+			});
+			if (selected) {
+				await setSelectedSolutionSetting(selected);
+				refreshLanguageStatus();
+			}
+		}
 	}
 
 	function refreshLanguageStatus() {

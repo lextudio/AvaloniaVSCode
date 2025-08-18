@@ -223,6 +223,12 @@
             "description": "(Deprecated) Use 'avalonia.misc.suppressXamlStylerRecommendation'.",
             "deprecationMessage": "Use 'avalonia.misc.suppressXamlStylerRecommendation' instead.",
             "scope": "window"
+          },
+          "avalonia.selectedSolution": {
+            "type": "string",
+            "default": "",
+            "description": "The currently selected solution file for Avalonia extension.",
+            "scope": "workspace"
           }
         }
       }

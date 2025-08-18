@@ -94,7 +94,25 @@ async function recordDiscovery(context: vscode.ExtensionContext | undefined, met
 	try { await context.workspaceState.update(AppConstants.solutionDiscoveryMeta, meta); } catch { /* ignore */ }
 }
 
-async function getSolutionFile(context?: vscode.ExtensionContext): Promise<string | undefined> {
+// Helper to get/set selected solution in workspace configuration
+const SOLUTION_SETTING_KEY = "avalonia.selectedSolution";
+function getSelectedSolutionSetting(): string | undefined {
+	return vscode.workspace
+		.getConfiguration()
+		.get<string>(SOLUTION_SETTING_KEY);
+}
+
+export async function setSelectedSolutionSetting(solutionPath: string) {
+	await vscode.workspace
+		.getConfiguration()
+		.update(
+			SOLUTION_SETTING_KEY,
+			solutionPath,
+			vscode.ConfigurationTarget.Workspace
+		);
+}
+
+export async function selectSolutionOnActivation(context: vscode.ExtensionContext) {
 	// Try getting solution file from extension exports first
 	const extensionIds = [
 		"ms-dotnettools.csharp",
@@ -108,15 +126,18 @@ async function getSolutionFile(context?: vscode.ExtensionContext): Promise<strin
 				// Try known export properties
 				if (ext.exports.CSharpExtensionExports?.workspace?.solutionPath) {
 					logger.info(`[SolutionDiscovery] Found solution from CSharpExtensionExports: ${ext.exports.CSharpExtensionExports.workspace.solutionPath}`);
-					return ext.exports.CSharpExtensionExports.workspace.solutionPath;
+					await setSelectedSolutionSetting(ext.exports.CSharpExtensionExports.workspace.solutionPath);
+					return;
 				}
 				if (ext.exports.OmnisharpExtensionExports?.workspace?.solutionPath) {
 					logger.info(`[SolutionDiscovery] Found solution from OmnisharpExtensionExports: ${ext.exports.OmnisharpExtensionExports.workspace.solutionPath}`);
-					return ext.exports.OmnisharpExtensionExports.workspace.solutionPath;
+					await setSelectedSolutionSetting(ext.exports.OmnisharpExtensionExports.workspace.solutionPath);
+					return;
 				}
 				if (ext.exports.workspace?.solutionPath) {
 					logger.info(`[SolutionDiscovery] Found solution from workspace.solutionPath: ${ext.exports.workspace.solutionPath}`);
-					return ext.exports.workspace.solutionPath;
+					await setSelectedSolutionSetting(ext.exports.workspace.solutionPath);
+					return;
 				}
 			}
 		} catch (err) {
@@ -135,33 +156,19 @@ async function getSolutionFile(context?: vscode.ExtensionContext): Promise<strin
 			foundFiles.push(...files);
 		}
 	}
-	let selected: string | undefined;
+	let selected: string | undefined = getSelectedSolutionSetting();
 	if (foundFiles.length > 0) {
 		// Sort by depth, then alphabetically
 		const sorted = foundFiles
 			.map(f => ({ f, depth: f.fsPath.split(/[\\\/]/).length }))
 			.sort((a, b) => a.depth - b.depth || a.f.fsPath.localeCompare(b.f.fsPath));
 		matched.push(...foundFiles.map(f => f.fsPath));
-		// Always show QuickPick, even if only one solution
-		const tokenSource = new (class extends vscode.CancellationTokenSource {})();
-		try {
-			selected = await vscode.window.showQuickPick(
-				sorted.map(x => x.f.fsPath),
-				{
-					title: 'Choose Solution File',
-					canPickMany: false
-				} as vscode.QuickPickOptions,
-				tokenSource.token
-			);
-		} catch {}
-		finally {
-			tokenSource.dispose();
-		}
-		if (!selected) {
-			// User cancelled, fallback to first
+		// If not set or invalid, select the shallowest solution automatically
+		if (!selected || !matched.includes(selected)) {
 			selected = sorted[0].f.fsPath;
+			logger.info(`[SolutionDiscovery] auto chosen=${selected}`);
+			await setSelectedSolutionSetting(selected);
 		}
-		logger.info(`[SolutionDiscovery] chosen=${selected} total=${sorted.length}`);
 		await recordDiscovery(context, {
 			searchedPatterns: patterns,
 			matchedFiles: matched,
@@ -169,19 +176,24 @@ async function getSolutionFile(context?: vscode.ExtensionContext): Promise<strin
 			fallbackToRoot: false,
 			timestamp: new Date().toISOString()
 		});
-		return selected;
+	} else {
+		// Fallback to workspace root
+		const root = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+		logger.info(`[SolutionDiscovery] fallbackRoot=${root}`);
+		await setSelectedSolutionSetting(root ?? "");
+		await recordDiscovery(context, {
+			searchedPatterns: patterns,
+			matchedFiles: matched,
+			selectedFile: root,
+			fallbackToRoot: true,
+			timestamp: new Date().toISOString()
+		});
 	}
-	// Fallback to workspace root
-	const root = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-	logger.info(`[SolutionDiscovery] fallbackRoot=${root}`);
-	await recordDiscovery(context, {
-		searchedPatterns: patterns,
-		matchedFiles: matched,
-		selectedFile: root,
-		fallbackToRoot: true,
-		timestamp: new Date().toISOString()
-	});
-	return root;
+}
+
+async function getSolutionFile(context?: vscode.ExtensionContext): Promise<string | undefined> {
+	// Only return the selected solution from workspace settings
+	return vscode.workspace.getConfiguration().get<string>("avalonia.selectedSolution");
 }
 
 async function isOutputExists(context?: vscode.ExtensionContext) {
