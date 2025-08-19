@@ -1,7 +1,7 @@
 {
   "name": "vscode-axaml",
-  "displayName": "Avalonia for VSCode by LeXtudio Inc.",
-  "description": "Avalonia tools for Visual Studio Code. Published by LeXtudio Inc.",
+  "displayName": "VS Code Tools for Avalonia by LeXtudio Inc.",
+  "description": "VS Code extension providing XAML tooling for Avalonia. Avalonia is a registered trademark of AvaloniaUI OÜ. Published by LeXtudio Inc.",
   "publisher": "lextudio",
   "version": "11.0.41",
   "license": "MIT",

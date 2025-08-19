@@ -1,4 +1,4 @@
-# Support Policy for Avalonia for Visual Studio Code from LeXtudio Inc.
+# Support Policy for VS Code Tools for Avalonia from LeXtudio Inc.
 
 This extension is maintained and supported by **LeXtudio Inc.** to provide Avalonia developers with a reliable, up-to-date, and productive experience in Visual Studio Code.
 

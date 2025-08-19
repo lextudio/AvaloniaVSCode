@@ -1,4 +1,4 @@
-# Avalonia for Visual Studio Code from LeXtudio Inc.
+# VSCode Tools for Avalonia from LeXtudio Inc.
 
 [![VS Code Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/lextudio.vscode-axaml?label=Version)](https://marketplace.visualstudio.com/items?itemName=lextudio.vscode-axaml)
 [![Installs](https://img.shields.io/visual-studio-marketplace/i/lextudio.vscode-axaml?label=Installs)](https://marketplace.visualstudio.com/items?itemName=lextudio.vscode-axaml)
@@ -6,20 +6,20 @@
 
 [Avalonia](https://github.com/AvaloniaUI/Avalonia/) is a cross-platform XAML-based UI framework providing a flexible styling system and supporting a wide range of Operating Systems such as Windows via .NET Framework and .NET Core, Linux via Xorg and macOS.
 
-The Avalonia for Visual Studio Code Extension contains support for Avalonia XAML support like autocomplete, previewer, etc.
+This Visual Studio Code Extension contains support for Avalonia XAML support like autocomplete, previewer, outlines, etc.
 
-> Fork & Maintenance Notice
->
-> This repository is a fork maintained by **LeXtudio Inc.** Our goal is to actively maintain and enhance the Avalonia developer experience in Visual Studio Code by:
->
-> - Keeping the extension up to date with new Avalonia releases
-> - Improving performance, reliability, and cross‑platform behavior
-> - Adding new productivity features (outline view, smarter completion, diagnostics, etc.)
-> - Responding to community feedback and accelerating fixes
->
-> Issues and feature requests are welcome—your input helps shape the roadmap.
+## Fork & Maintenance Notice
 
-Follow the [contribution guide](CONTRIBUTING.md) if you want to help us build the extension
+This repository is a fork of the original Avalonia for VS Code extension, currently maintained by **LeXtudio Inc.** Our goal is to actively maintain and enhance the Avalonia developer experience in Visual Studio Code by:
+
+- Keeping the extension up to date with new Avalonia releases
+- Improving performance, reliability, and cross‑platform behavior
+- Adding new productivity features (outline view, smarter completion, diagnostics, etc.)
+- Responding to community feedback and accelerating fixes
+
+Issues and feature requests are welcome—your input helps shape the roadmap.
+
+Follow the [contribution guide](CONTRIBUTING.md) if you want to help us build the extension.
 
 ## Getting Started
 
@@ -63,6 +63,10 @@ Rich syntax highlighter and contextual code complete will make it lot easier to 
 
 ![Code completion](media/AutoCompleteRM.png)
 
+### XAML Outlines
+
+The Avalonia XAML in the VS Code supports outlining, allowing you to collapse and expand sections of your XAML files for better readability.
+
 ### Useful Commands
 
 - `Avalonia: Toggle verbose Avalonia logs` (`avalonia.toggleVerboseLogs`)
@@ -80,6 +84,9 @@ Rich syntax highlighter and contextual code complete will make it lot easier to 
 - `avalonia.misc.suppressXamlStylerRecommendation` – Suppress prompt recommending XAML Styler extension
 - `avalonia.previewer.emitBinlog` – Emit MSBuild binary log when building previewer assets
 - `avalonia.previewer.runDotnetInfo` – Run 'dotnet --info' before building previewer assets
+
+---
+Avalonia is a registered trademark of AvaloniaUI OÜ.
 
 Copyright (c) 2023 AvaloniaUI  
 Copyright (c) 2025 LeXtudio Inc.  
