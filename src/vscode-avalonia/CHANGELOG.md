@@ -1,5 +1,13 @@
 # Change Log
 
+## [11.0.42] - 19 August 2025
+
+Highlights:
+
+- Extension name and description updated for Avalonia trademark compliance. Attribution added.
+- Project selection and asset generation split into separate commands for clarity and user control.
+- Language status item now shows selected project and allows re-selection.
+
 ## [11.0.41] - 17 August 2025
 
 Highlights:

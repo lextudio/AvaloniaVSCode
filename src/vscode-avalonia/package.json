@@ -3,7 +3,7 @@
   "displayName": "VS Code Tools for Avalonia by LeXtudio Inc.",
   "description": "VS Code extension providing XAML tooling for Avalonia. Avalonia is a registered trademark of AvaloniaUI OÜ. Published by LeXtudio Inc.",
   "publisher": "lextudio",
-  "version": "11.0.41",
+  "version": "11.0.42",
   "license": "MIT",
   "preview": true,
   "qna": "false",
