@@ -1,5 +1,11 @@
 # Change Log
 
+## [11.0.45] - 20 August 2025
+
+Fixes:
+
+- Revised language server binary bundle.
+
 ## [11.0.44] - 20 August 2025
 
 Fixes:
