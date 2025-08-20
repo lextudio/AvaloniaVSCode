@@ -1,5 +1,11 @@
 # Change Log
 
+## [11.0.43] - 20 August 2025
+
+Highlights:
+
+- Documentation and trademark compliance further improved.
+
 ## [11.0.42] - 19 August 2025
 
 Highlights:
