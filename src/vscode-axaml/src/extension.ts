@@ -25,8 +25,6 @@ let languageClient: lsp.LanguageClient | null = null;
  */
 export async function activate(context: vscode.ExtensionContext) {
 
-	await selectSolutionOnActivation(context);
-
 	// Warn about conflicting / legacy extensions that should be uninstalled
 	const conflicting = [
 		"AvaloniaTeam.vscode-avalonia", // legacy / upstream variant
@@ -222,6 +220,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	if (!vscode.workspace.workspaceFolders) {
 		return;
 	}
+
+	await selectSolutionOnActivation(context);
 
 	vscode.window.onDidChangeActiveTextEditor((editor) => {
 		if (editor && util.isAvaloniaFile(editor.document)) {

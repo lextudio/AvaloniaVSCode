@@ -99,12 +99,13 @@ export class CreatePreviewerAssets implements Command {
 				dotnet.stdout.on("data", (data) => logger.info(`${data}`));
 				dotnet.on("close", async (code) => {
 					if (code === 0) {
-						if (
-							!project.designerHostPath ||
-							project.designerHostPath === ""
-						) {
+						// TODO: revisit the conditions
+						// if (
+						// 	!project.designerHostPath ||
+						// 	project.designerHostPath === ""
+						// ) {
 							await sln.buildSolutionModel(this._context, true);
-						}
+						//}
 						const solution = sln.getSolutionModel(this._context);
 						if (!solution) {
 							return reject("Solution data not found.");

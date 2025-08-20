@@ -400,3 +400,4 @@ output/
 *.sln.iml
 src/vscode-axaml/README.md
 src/vscode-axaml/LICENSE
+src/vscode-axaml/AxamlServer/AxamlLanguageServer.dll
