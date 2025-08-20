@@ -398,5 +398,5 @@ output/
 
 # JetBrains Rider
 *.sln.iml
-src/vscode-avalonia/README.md
-src/vscode-avalonia/LICENSE
+src/vscode-axaml/README.md
+src/vscode-axaml/LICENSE

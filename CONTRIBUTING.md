@@ -1,6 +1,6 @@
 # Contribution Guide
 
-Welcome to Avalonia Extension for VS Code! We appreciate your interest in contributing. This guide will help you get started with contributing to our project. Please read it carefully.
+Welcome to VS Code Tools for AXAML! We appreciate your interest in contributing. This guide will help you get started with contributing to our project. Please read it carefully.
 
 ## System Requirements
 
@@ -28,11 +28,11 @@ Welcome to Avalonia Extension for VS Code! We appreciate your interest in contri
 1. Fork and Clone the repository
 
     ```bash
-    git clone --recursive https://github.com/lextudio/AvaloniaVSCode
+    git clone --recursive https://github.com/lextudio/vscode-axaml
     ```
 
 2. Update submodules  
-This extension uses git submodules to pull in the Solution Parser and the Avalonia Visual Studio repo. Run the following to pull in the submodules:
+This extension uses git submodules to pull in the Solution Parser and the AXAML Visual Studio repo. Run the following to pull in the submodules:
 
     ``` bash
     git submodule update --init --recursive
@@ -72,7 +72,7 @@ Or specify a custom output directory:
 
 The script will:
 
-- Copy the root README and LICENSE into `src/vscode-avalonia` temporarily
+- Copy the root README and LICENSE into `src/vscode-axaml` temporarily
 - Build the language server (Release) & solution parser
 - Compile the TypeScript client
 - Run `vsce package` and place the .vsix in the output folder

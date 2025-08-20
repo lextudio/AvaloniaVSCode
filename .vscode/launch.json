@@ -5,10 +5,10 @@
             "type": "extensionHost",
             "request": "launch",
             "args": [
-                "--extensionDevelopmentPath=${workspaceFolder}/src/vscode-avalonia"
+                "--extensionDevelopmentPath=${workspaceFolder}/src/vscode-axaml"
             ],
             "outFiles": [
-                "${workspaceFolder}/src/vscode-avalonia/out/**/*.js"
+                "${workspaceFolder}/src/vscode-axaml/out/**/*.js"
             ],
             "preLaunchTask": "Build Extension",
             "sourceMaps": true,
@@ -18,10 +18,10 @@
             "type": "extensionHost",
             "request": "launch",
             "args": [
-                "--extensionDevelopmentPath=${workspaceFolder}/src/vscode-avalonia"
+                "--extensionDevelopmentPath=${workspaceFolder}/src/vscode-axaml"
             ],
             "outFiles": [
-                "${workspaceFolder}/src/vscode-avalonia/out/**/*.js"
+                "${workspaceFolder}/src/vscode-axaml/out/**/*.js"
             ],
             "preLaunchTask": "Only Extension",
             "sourceMaps": true,

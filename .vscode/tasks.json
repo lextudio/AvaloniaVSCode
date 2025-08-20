@@ -7,7 +7,7 @@
             "command": "dotnet",
             "args": [
                 "build",
-                "${workspaceFolder}/src/AvaloniaLSP/AvaloniaLSP.sln",
+                "${workspaceFolder}/src/AxamlLSP/AxamlLSP.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -22,7 +22,7 @@
             "type": "shell",
             "problemMatcher": "$tsc-watch",
             "options": {
-                "cwd": "${workspaceFolder}/src/vscode-avalonia"
+                "cwd": "${workspaceFolder}/src/vscode-axaml"
             },
         },
         {
@@ -34,7 +34,7 @@
             "type": "shell",
             "problemMatcher": "$tsc-watch",
             "options": {
-                "cwd": "${workspaceFolder}/src/vscode-avalonia"
+                "cwd": "${workspaceFolder}/src/vscode-axaml"
             },
             "dependsOn": [
                 "Build LSP Server",
@@ -47,12 +47,12 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/AvaloniaLSP/AvaloniaLanguageServer/AvaloniaLanguageServer.csproj",
+                "${workspaceFolder}/src/AxamlLSP/AxamlLanguageServer/AxamlLanguageServer.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary",
                 "/property:Configuration=Release",
                 "--output",
-                "${workspaceFolder}/src/vscode-avalonia/avaloniaServer"
+                "${workspaceFolder}/src/vscode-axaml/axamlServer"
             ],
             "problemMatcher": "$msCompile"
         },
@@ -67,7 +67,7 @@
                 "/consoleloggerparameters:NoSummary",
                 "/property:Configuration=Release",
                 "--output",
-                "${workspaceFolder}/src/vscode-avalonia/solutionParserTool"
+                "${workspaceFolder}/src/vscode-axaml/solutionParserTool"
             ],
             "problemMatcher": "$msCompile"
     }

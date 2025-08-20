@@ -2,10 +2,10 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "${BASH_SOURCE[0]%/*}" && pwd)"
-EXT_DIR="$ROOT_DIR/src/vscode-avalonia"
+EXT_DIR="$ROOT_DIR/src/vscode-axaml"
 OUT_DIR="${1:-$ROOT_DIR/output}"
 
-echo "Packaging Avalonia VS Code extension"
+echo "Packaging VS Code Tools for AXAML extension"
 echo "Root: $ROOT_DIR"
 echo "Extension: $EXT_DIR"
 echo "Output: $OUT_DIR"
@@ -21,7 +21,7 @@ cp "$ROOT_DIR/LICENSE" LICENSE
 
 # Build server & tools (expects user to have run dotnet restore earlier)
 echo "Building language server + solution parser (Release)..."
-dotnet build "$ROOT_DIR/src/AvaloniaLSP/AvaloniaLanguageServer/AvaloniaLanguageServer.csproj" -c Release --nologo --output "$EXT_DIR/avaloniaServer"
+dotnet build "$ROOT_DIR/src/AxamlLSP/AxamlLanguageServer/AxamlLanguageServer.csproj" -c Release --nologo --output "$EXT_DIR/AxamlServer"
 dotnet build "$ROOT_DIR/src/SolutionParser/SolutionParser.csproj" -c Release --nologo --output "$EXT_DIR/solutionParserTool"
 
 echo "Building & bundling extension (TypeScript via esbuild)..."

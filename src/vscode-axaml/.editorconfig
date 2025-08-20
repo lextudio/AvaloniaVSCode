@@ -1,0 +1,10 @@
+# EditorConfig for vscode-axaml extension
+root = true
+
+[*.ts]
+indent_style = tab
+indent_size = 4
+
+[*.js]
+indent_style = tab
+indent_size = 4

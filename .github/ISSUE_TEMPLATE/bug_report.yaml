@@ -19,7 +19,7 @@ body:
     - type: input
       id: plugin-version
       attributes:
-          label: VS Code Tools for Avalonia
+          label: VS Code Tools for AXAML
           placeholder: e.g. v0.10.18
       validations:
           required: true
@@ -36,8 +36,8 @@ body:
     - type: textarea
       id: logs
       attributes:
-          label: Relevant log output from "Avalonia Client"
-          description: Please attach the extension's log output found in the Output panel (View -> Output) *under the Avalonia Client channel*. Click the "Open Log Output File" button to locate the extension's log file.
+          label: Relevant log output from "AXAML Client"
+          description: Please attach the extension's log output found in the Output panel (View -> Output) *under the AXAML Client channel*. Click the "Open Log Output File" button to locate the extension's log file.
           render: Shell
       validations:
           required: true

@@ -1,0 +1,240 @@
+{
+  "name": "vscode-axaml",
+  "displayName": "VS Code Tools for AXAML by LeXtudio Inc.",
+  "description": "VS Code extension providing AXAML tooling. Published by LeXtudio Inc.",
+  "publisher": "lextudio",
+  "version": "11.0.42",
+  "license": "MIT",
+  "preview": true,
+  "qna": "false",
+  "sponsor": {
+    "url": "https://github.com/sponsors/lextudio"
+  },
+  "icon": "./media/icon.png",
+  "engines": {
+    "vscode": "^1.79.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets"
+  ],
+  "keywords": [
+    "AXAML",
+    "Avalonia"
+  ],
+  "galleryBanner": {
+    "color": "#161C2D",
+    "theme": "dark"
+  },
+  "bugs": {
+    "url": "https://github.com/lextudio/vscode-axaml/issues",
+    "email": "support@lextudio.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lextudio/vscode-axaml"
+  },
+  "activationEvents": [
+    "workspaceContains:**/*.axaml",
+    "onLanguage:axaml"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsWelcome": [
+      {
+        "view": "explorer",
+        "contents": "[Open a folder](command:vscode.openFolder) containing an Avalonia project, or create a new one.\n[Create Avalonia Project](command:axaml.newProject)"
+      }
+    ],
+    "languages": [
+      {
+        "id": "axaml",
+        "aliases": [
+          "Avalonia XAML",
+          "axaml",
+          "AXAML"
+        ],
+        "extensions": [
+          ".axaml",
+          ".axml"
+        ],
+        "configuration": "./AXAML.language-configuration.json",
+        "icon": {
+          "dark": "./media/xaml-dark.svg",
+          "light": "./media/xaml-light.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "axaml",
+        "scopeName": "source.axaml",
+        "path": "./AXAML.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "axaml.createPreviewerAssets",
+        "title": "Create previewer assets",
+        "category": "AXAML"
+      },
+      {
+        "command": "axaml.showPreviewToSide",
+        "title": "Show preview",
+        "category": "AXAML",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "axaml.newProject",
+        "title": "Create a new Avalonia Project",
+        "category": "AXAML"
+      },
+      {
+        "command": "axaml.showSolutionDiscoveryInfo",
+        "title": "Show solution discovery info",
+        "category": "AXAML"
+      },
+      {
+        "command": "axaml.openSolutionModelJson",
+        "title": "Open solution model JSON",
+        "category": "AXAML"
+      },
+      {
+        "command": "axaml.toggleVerboseLogs",
+        "title": "Toggle verbose AXAML logs",
+        "category": "AXAML"
+      },
+      {
+        "command": "axaml.selectProject",
+        "title": "Select Executable Project to preview",
+        "category": "AXAML"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "when": "editorLangId == axaml",
+          "command": "axaml.showPreviewToSide",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "axaml.showPreviewToSide",
+          "when": "resourceLangId == axaml",
+          "group": "AXAML"
+        }
+      ]
+    },
+    "configuration": [
+      {
+        "title": "AXAML",
+        "type": "object",
+        "properties": {
+          "axaml.trace.server": {
+            "type": "string",
+            "enum": [
+              "off",
+              "messages",
+              "verbose"
+            ],
+            "default": "messages",
+            "description": "Trace level for language server protocol traffic.",
+            "scope": "window"
+          },
+          "axaml.trace.verbose": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable verbose AXAML server side logs (assembly scanning, metadata fallback).",
+            "scope": "window"
+          },
+          "axaml.previewer.emitBinlog": {
+            "type": "boolean",
+            "default": false,
+            "description": "Emit an MSBuild binary log (msbuild.binlog) when building previewer assets.",
+            "scope": "workspace"
+          },
+          "axaml.previewer.runDotnetInfo": {
+            "type": "boolean",
+            "default": false,
+            "description": "Run 'dotnet --info' before building previewer assets to capture environment diagnostics.",
+            "scope": "workspace"
+          },
+          "axaml.completion.buildConfigurationPreference": {
+            "type": "string",
+            "enum": [
+              "Debug",
+              "Release",
+              "Auto"
+            ],
+            "default": "Auto",
+            "description": "Preferred build configuration for locating assemblies used by completion (Auto tries Debug then Release).",
+            "scope": "workspace"
+          },
+          "axaml.misc.suppressXamlStylerRecommendation": {
+            "type": "boolean",
+            "default": false,
+            "description": "Suppress prompt recommending the optional XAML Styler extension (dabbinavo.xamlstyler).",
+            "scope": "window"
+          },
+          "axaml.selectedSolution": {
+            "type": "string",
+            "default": "",
+            "description": "The currently selected solution file for this extension.",
+            "scope": "workspace"
+          }
+        }
+      }
+    ],
+    "snippets": [
+      {
+        "language": "csharp",
+        "path": "./csharp.json"
+      }
+    ]
+  },
+  "scripts": {
+    "install:all": "yarn install",
+    "vscode:prepublish": "yarn run bundle",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "yarn run compile && yarn run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "bundle": "node ./esbuild.config.mjs"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.1",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.79.0",
+    "@types/vscode-webview": "^1.57.1",
+    "@typescript-eslint/eslint-plugin": "^5.53.0",
+    "@typescript-eslint/parser": "^5.53.0",
+    "@vscode/test-electron": "^2.2.3",
+    "esbuild": "^0.21.5",
+    "eslint": "^8.34.0",
+    "jest": "^30.0.5",
+    "mocha": "^10.2.0",
+    "typescript": "^4.9.5",
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.2.0"
+  },
+  "dependencies": {
+    "@vscode/codicons": "^0.0.33",
+    "@vscode/webview-ui-toolkit": "^1.2.2",
+    "@xmldom/xmldom": "^0.8.10",
+    "bson": "^5.4.0",
+    "fs-extra": "^11.1.1",
+    "glob": "^8.1.0",
+    "portfinder": "^1.0.32",
+    "strongly-typed-events": "^3.0.11",
+    "tree-kill": "^1.2.2",
+    "vscode-languageclient": "^8.1.0",
+    "xpath": "^0.0.32"
+  },
+  "extensionDependencies": [
+    "ms-dotnettools.vscode-dotnet-runtime"
+  ]
+}
