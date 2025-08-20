@@ -1,5 +1,12 @@
 # Change Log
 
+## [11.0.44] - 20 August 2025
+
+Fixes:
+
+- Fixed an issue with invalid solution cache due to new AXAML files.
+- Fixed an issue with activation that blocks new project command.
+
 ## [11.0.43] - 20 August 2025
 
 Highlights:
