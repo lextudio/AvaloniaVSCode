@@ -1,11 +1,11 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 #
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaloniaLanguageServer", "AvaloniaLanguageServer\AvaloniaLanguageServer.csproj", "{0DAE7CA7-F8E8-46FB-94D6-4D7B4E19637D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AxamlLanguageServer", "AxamlLanguageServer\AxamlLanguageServer.csproj", "{0DAE7CA7-F8E8-46FB-94D6-4D7B4E19637D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avalonia.Ide.CompletionEngine", "..\AvaloniaVS\CompletionEngine\Avalonia.Ide.CompletionEngine\Avalonia.Ide.CompletionEngine.csproj", "{8CC4DD56-849C-432A-9811-A1FA7A50C869}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avalonia.Ide.CompletionEngine", "..\AxamlVS\CompletionEngine\Avalonia.Ide.CompletionEngine\Avalonia.Ide.CompletionEngine.csproj", "{8CC4DD56-849C-432A-9811-A1FA7A50C869}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avalonia.Ide.CompletionEngine.DnlibMetadataProvider", "..\AvaloniaVS\CompletionEngine\Avalonia.Ide.CompletionEngine.DnlibMetadataProvider\Avalonia.Ide.CompletionEngine.DnlibMetadataProvider.csproj", "{156F9284-BA3A-419E-A532-F0E5A9122EB0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avalonia.Ide.CompletionEngine.DnlibMetadataProvider", "..\AxamlVS\CompletionEngine\Avalonia.Ide.CompletionEngine.DnlibMetadataProvider\Avalonia.Ide.CompletionEngine.DnlibMetadataProvider.csproj", "{156F9284-BA3A-419E-A532-F0E5A9122EB0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolutionParser", "..\SolutionParser\SolutionParser.csproj", "{7A3BD829-44F9-496B-84E5-3DFAB36BA1F1}"
 EndProject

@@ -85,57 +85,7 @@ public class ProjectInfo
         var debugFirstOrder = GetOrderedConfigurations();
         var triedConventions = new List<string>();
 
-        // 2. Conventional bin/<Config>[/<TFM>[/<RID>]] search (cheap heuristic)
-        var conventionalTriedPaths = new List<string>();
-        foreach (var config in debugFirstOrder)
-        {
-            if (cancellationToken.IsCancellationRequested) return string.Empty;
-            var baseDir = Path.Combine(ProjectDirectory, "bin", config);
-            Log.Information("[AsmLookup] Convention scan baseDir={BaseDir} config={Config}", baseDir, config);
-            if (!Directory.Exists(baseDir)) { triedConventions.Add(config + ":missing-bin"); continue; }
-
-            // Quick direct candidate at root
-            var direct = Path.Combine(baseDir, assemblyBaseName + ".dll");
-            conventionalTriedPaths.Add(direct);
-            if (File.Exists(direct))
-            {
-                Log.Information("[AsmLookup] Found direct conventional assembly {Path}", direct);
-                return direct;
-            }
-
-            // Depth-1 directories (likely TFMs)
-            try
-            {
-                foreach (var tfmDir in Directory.EnumerateDirectories(baseDir))
-                {
-                    var candidate = Path.Combine(tfmDir, assemblyBaseName + ".dll");
-                    conventionalTriedPaths.Add(candidate);
-                    if (File.Exists(candidate))
-                    {
-                        Log.Information("[AsmLookup] Found TFM conventional assembly {Path}", candidate);
-                        return candidate;
-                    }
-                    // One more depth for RID
-                    foreach (var ridDir in Directory.EnumerateDirectories(tfmDir))
-                    {
-                        var ridCandidate = Path.Combine(ridDir, assemblyBaseName + ".dll");
-                        conventionalTriedPaths.Add(ridCandidate);
-                        if (File.Exists(ridCandidate))
-                        {
-                            Log.Information("[AsmLookup] Found RID conventional assembly {Path}", ridCandidate);
-                            return ridCandidate;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Information(ex, "[AsmLookup] Conventional search exception for {Project} {Config}", ProjectPath, config);
-            }
-            triedConventions.Add(config);
-        }
-
-        // 3. msbuild-evaluated (accurate but slower) per configuration
+        // 2. msbuild-evaluated (accurate but slower) per configuration
         var triedMsBuild = new List<string>();
         foreach (var config in debugFirstOrder)
         {
@@ -182,12 +132,9 @@ public class ProjectInfo
             triedMsBuild.Add(config);
         }
 
-        Log.Information("[AsmLookup] Assembly not found for {Project}. Conventions tried: {Conv}. MsBuild tried: {MsBuild}. LaunchJson={LaunchJson} TriedPaths={Paths}", ProjectPath, string.Join(',', triedConventions), string.Join(',', triedMsBuild), launchJsonPath ?? "not-found", string.Join('|', conventionalTriedPaths));
+        Log.Information("[AsmLookup] Assembly not found for {Project}. MsBuild tried: {MsBuild}. LaunchJson={LaunchJson} TriedPaths={Paths}", ProjectPath, string.Join(',', triedMsBuild), launchJsonPath ?? "not-found", string.Join('|', triedConventions));
         return string.Empty;
     }
-
-    static Dictionary<string, string> EvaluateMsBuildProperties(string projectPath, string configuration, IEnumerable<string> properties)
-        => EvaluateMsBuildProperties(projectPath, configuration, properties, CancellationToken.None);
 
     static Dictionary<string, string> EvaluateMsBuildProperties(string projectPath, string configuration, IEnumerable<string> properties, CancellationToken cancellationToken)
     {
@@ -247,7 +194,8 @@ public class ProjectInfo
             try
             {
                 using var doc = JsonDocument.Parse(stdout);
-                foreach (var prop in doc.RootElement.EnumerateObject())
+                var props = doc.RootElement.GetProperty("Properties");
+                foreach (var prop in props.EnumerateObject())
                 {
                     result[prop.Name] = prop.Value.GetString() ?? string.Empty;
                 }
@@ -257,7 +205,10 @@ public class ProjectInfo
                 Log.Information(ex, "[AsmLookup] Failed to parse MSBuild output as JSON for {Project}", projectPath);
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            Log.Information(ex, "[AsmLookup] Failed to evaluate MSBuild properties for {Project}", projectPath);
+        }
 
         s_propsCache[key] = new CachedProps { Props = result, ProjectTimestamp = projectTimestamp, FetchedAt = DateTime.UtcNow };
         return result;
