@@ -1,5 +1,11 @@
 # Change Log
 
+## [11.0.46] - 20 August 2025
+
+Fixes:
+
+- Selected project cache issue fixed.
+
 ## [11.0.45] - 20 August 2025
 
 Fixes:
