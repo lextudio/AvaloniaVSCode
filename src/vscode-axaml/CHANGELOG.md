@@ -1,5 +1,11 @@
 # Change Log
 
+## [11.0.48] - 21 August 2025
+
+Fixes:
+
+- Resolved the language server path.
+
 ## [11.0.47] - 20 August 2025
 
 Fixes:
