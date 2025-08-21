@@ -37,6 +37,7 @@ export class PreviewerProcess implements Command {
 		const fileData = util.getFileDetails(mainUri.fsPath, this._context);
 
 		if (!fileData) {
+			// TODO: this should trigger an auto rebuild? No. Empty .axaml file hits it.
 			return { file: mainUri, previewerUrl: "", assetsAvailable: false };
 		}
 

@@ -110,11 +110,15 @@ export class CreatePreviewerAssets implements Command {
 						if (!solution) {
 							return reject("Solution data not found.");
 						}
-						const prj = this._context.workspaceState.get<
+						var cached = this._context.workspaceState.get<
 							sm.Project | undefined
 						>(AppConstants.selectedExecutableProject, undefined);
-						if (!prj) {
+						if (!cached) {
 							return reject("Selected project not found.");
+						}
+						const prj = solution.projects.find(p => p.name === cached!.name);
+						if (!prj) {
+							return reject("Project not found in solution.");
 						}
 						resolve({
 							previewerPath: prj.designerHostPath,
