@@ -1,5 +1,11 @@
 # Change Log
 
+## [11.0.47] - 20 August 2025
+
+Fixes:
+
+- Removed an autocompletion assembly resolution option.
+
 ## [11.0.46] - 20 August 2025
 
 Fixes:
