@@ -6,7 +6,7 @@
 
 [Avalonia](https://github.com/AvaloniaUI/Avalonia/) is a cross-platform XAML-based UI framework providing a flexible styling system and supporting a wide range of Operating Systems such as Windows via .NET Framework and .NET Core, Linux via Xorg and macOS. It uses AXAML format, which is a variant of XAML.
 
-This Visual Studio Code Extension contains support for AXAML support like autocomplete, previewer, outlines, etc.
+This Visual Studio Code Extension contains support for AXAML like autocompletion, live previewer, document outlines, etc.
 
 Avalonia is a registered trademark of AvaloniaUI OÜ. This extension is independent and unaffiliated with Avalonia.
 
@@ -43,9 +43,9 @@ This will create a new folder called `MyApp` with your application files. You ca
 
     dotnet new install Avalonia.Templates
 
-Finally open the MyApp folder in the VS Code, open any axaml file to activate the extension and code completion.
+Finally open the MyApp folder in the VS Code, open any AXAML file to activate the extension and code completion.
 
-> NOTE: You must build the project to enable code completion for now.
+> NOTE: You must build the project once to enable code completion.
 
 ### Enable Previewer
 
@@ -53,21 +53,19 @@ Finally open the MyApp folder in the VS Code, open any axaml file to activate th
 
 After you load the project in the VS Code, you can click on Show Preview button on the editor toolbar (1)
 
-The previewer requires that your project is built, and has required metadata. When you open the project for the first time, or clean the project. Click on Generate Assets button (2), and wait for a couple of seconds to preview the XAML file.
+The previewer will prompt you to build your project if needed.
 
 The previewer will refresh when you switch between multiple xaml files, unlike Visual Studio for Windows or Rider, VS Code will reuse the single preview window.
 
 ### XAML Code completion
 
-The AXAML completion in the VS Code is powered by a language server.
-
-Rich syntax highlighter and contextual code complete will make it lot easier to read and write AXAML files
+Rich syntax highlighter and contextual code completion will make it lot easier to read and write AXAML files
 
 ![Code completion](media/AutoCompleteRM.png)
 
 ### XAML Outlines
 
-The AXAML in the VS Code supports outlining, allowing you to collapse and expand sections of your AXAML files for better readability.
+The AXAML files in the VS Code are showed with document outlines, allowing you to collapse and expand sections of your AXAML files for better readability.
 
 ### Useful Commands
 
