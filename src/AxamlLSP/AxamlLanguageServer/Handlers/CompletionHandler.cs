@@ -17,7 +17,7 @@ public class CompletionHandler : CompletionHandlerBase
             Label = request.Label,
             Kind = request.Kind,
             InsertText = request.InsertText,
-            Command = Command.Create("avalonia.InsertProperty", new { repositionCaret = RepositionCaret() })
+            Command = Command.Create("axaml.InsertProperty", new { repositionCaret = RepositionCaret() })
         };
 
         return Task.FromResult(ci);
@@ -43,7 +43,7 @@ public class CompletionHandler : CompletionHandlerBase
                     Label = "Build the project",
                     Documentation = new StringOrMarkupContent("Build the project to enable code completion"),
                     Kind = CompletionItemKind.Event,
-                    Command = Command.Create("avalonia.createPreviewerAssets", new {triggerCodeComplete = true}),
+                    Command = Command.Create("axaml.createPreviewerAssets", new {triggerCodeComplete = true}),
                     InsertText = " "
                 }
             ]);

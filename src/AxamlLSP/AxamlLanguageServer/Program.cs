@@ -53,7 +53,7 @@ public class Program
                                 workspaceRoot = wr.GetString();
                         }
                     }
-                    pref ??= Environment.GetEnvironmentVariable("AVALONIA_BUILD_CONFIGURATION_PREFERENCE");
+                    pref ??= Environment.GetEnvironmentVariable("AXAML_BUILD_CONFIGURATION_PREFERENCE");
                     if (!string.IsNullOrWhiteSpace(pref))
                         ProjectInfo.SetConfigurationPreference(pref!);
                     if (!verboseLogs)
@@ -72,7 +72,7 @@ public class Program
 
     static void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton(new ConfigurationItem { Section = "Avalonia Server" });
+        services.AddSingleton(new ConfigurationItem { Section = "AXAML Server" });
         services.AddSingleton(new DocumentSelector(
             new DocumentFilter { Pattern = "**/*.axaml" }
         ));
@@ -84,7 +84,7 @@ public class Program
 
     static void InitializeLogging()
     {
-        string logFilePath = Path.Combine(Path.GetTempPath(), "avalonia.log");
+        string logFilePath = Path.Combine(Path.GetTempPath(), "axaml.log");
         Log.Logger = new LoggerConfiguration()
             .WriteTo.File(logFilePath)
             .Enrich.FromLogContext()
