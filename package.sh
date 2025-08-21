@@ -21,7 +21,7 @@ cp "$ROOT_DIR/LICENSE" LICENSE
 
 # Build server & tools (expects user to have run dotnet restore earlier)
 echo "Building language server + solution parser (Release)..."
-dotnet build "$ROOT_DIR/src/AxamlLSP/AxamlLanguageServer/AxamlLanguageServer.csproj" -c Release --nologo --output "$EXT_DIR/AxamlServer"
+dotnet build "$ROOT_DIR/src/AxamlLSP/AxamlLanguageServer/AxamlLanguageServer.csproj" -c Release --nologo --output "$EXT_DIR/axamlServer"
 dotnet build "$ROOT_DIR/src/SolutionParser/SolutionParser.csproj" -c Release --nologo --output "$EXT_DIR/solutionParserTool"
 
 echo "Building & bundling extension (TypeScript via esbuild)..."
