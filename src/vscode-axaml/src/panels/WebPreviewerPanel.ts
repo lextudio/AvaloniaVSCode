@@ -5,111 +5,122 @@ import { PreviewProcessManager } from "../previewProcessManager";
 import { PreviewServer } from "../services/previewServer";
 
 export class WebPreviewerPanel {
-  public static currentPanel: WebPreviewerPanel | undefined;
+	public static currentPanel: WebPreviewerPanel | undefined;
 
-  public static readonly viewType = "webPreviewer";
+	public static readonly viewType = "webPreviewer";
 
-  private readonly _panel: vscode.WebviewPanel;
-  private readonly _fileUrl: vscode.Uri;
-  private _disposables: vscode.Disposable[] = [];
+	private readonly _panel: vscode.WebviewPanel;
+	private readonly _fileUrl: vscode.Uri;
+	private _disposables: vscode.Disposable[] = [];
 
-  public static createOrShow(
-    url: string,
-    fileUri: vscode.Uri,
-    extensionUri: vscode.Uri,
-    targetPath: string,
-    processManager?: PreviewProcessManager,
-    previewColumn: vscode.ViewColumn = vscode.ViewColumn.Active
-  ) {
-    const column = previewColumn || vscode.window.activeTextEditor?.viewColumn;
+	public static createOrShow(
+		url: string,
+		fileUri: vscode.Uri,
+		extensionUri: vscode.Uri,
+		targetPath: string,
+		processManager?: PreviewProcessManager,
+		previewColumn: vscode.ViewColumn = vscode.ViewColumn.Active
+	) {
+		const column =
+			previewColumn || vscode.window.activeTextEditor?.viewColumn;
 
-    // If we already have a panel, show it.
-    if (WebPreviewerPanel.currentPanel) {
-      WebPreviewerPanel.currentPanel._panel.reveal(column);
-      WebPreviewerPanel.currentPanel._update(url);
-      return;
-    }
+		// If we already have a panel, show it.
+		if (WebPreviewerPanel.currentPanel) {
+			WebPreviewerPanel.currentPanel._panel.reveal(column);
+			WebPreviewerPanel.currentPanel._update(url);
+			return;
+		}
 
-    // Otherwise, create a new panel.
-    const panel = vscode.window.createWebviewPanel(
-      WebPreviewerPanel.viewType,
-      "Previewer",
-      column || vscode.ViewColumn.One,
-      {
-        enableScripts: true,
-      }
-    );
-    WebPreviewerPanel.currentPanel = new WebPreviewerPanel(
-      panel,
-      url,
-	  fileUri,
-	  targetPath,
-      processManager
-    );
+		// Otherwise, create a new panel.
+		const panel = vscode.window.createWebviewPanel(
+			WebPreviewerPanel.viewType,
+			"Previewer",
+			column || vscode.ViewColumn.One,
+			{
+				enableScripts: true,
+			}
+		);
+		WebPreviewerPanel.currentPanel = new WebPreviewerPanel(
+			panel,
+			url,
+			fileUri,
+			targetPath,
+			processManager
+		);
 
-    this.updateTitle(fileUri);
-    WebPreviewerPanel.currentPanel._panel.iconPath = {
-      dark: vscode.Uri.joinPath(extensionUri, "media", "preview-dark.svg"),
-      light: vscode.Uri.joinPath(extensionUri, "media", "preview-light.svg"),
-    };
-  }
-
-  public static updateTitle(file: vscode.Uri) {
-    const currentPanel = WebPreviewerPanel.currentPanel;
-    if (currentPanel) {
-      currentPanel._panel.title = `Preview ${path.basename(file.fsPath)}`;
-    }
-  }
-
-  private constructor(
-    panel: vscode.WebviewPanel,
-    url: string,
-	fileUrl: vscode.Uri,
-	targetPath: string,
-    private readonly _processManager?: PreviewProcessManager
-  ) {
-	this._panel = panel;
-	this._fileUrl = fileUrl;
-	const server = PreviewServer.getInstanceByAssemblyName(targetPath)!;
-	if (!server?.isReady) {
-		// Subscribe to onReady event to update webview when ready
-		server.onReady.subscribe(() => {
-			this._update(url);
-		});
-	} else {
-		this._update(url);
+		this.updateTitle(fileUri);
+		WebPreviewerPanel.currentPanel._panel.iconPath = {
+			dark: vscode.Uri.joinPath(
+				extensionUri,
+				"media",
+				"preview-dark.svg"
+			),
+			light: vscode.Uri.joinPath(
+				extensionUri,
+				"media",
+				"preview-light.svg"
+			),
+		};
 	}
 
-    // Listen for when the panel is disposed
-    // This happens when the user closes the panel or when the panel is closed programmatically
-    this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-  }
+	public static updateTitle(file: vscode.Uri) {
+		const currentPanel = WebPreviewerPanel.currentPanel;
+		if (currentPanel) {
+			currentPanel._panel.title = `Preview ${path.basename(file.fsPath)}`;
+		}
+	}
 
-  /**
-   * Cleans up and disposes of webview resources when the webview panel is closed.
-   */
-  public dispose() {
-    WebPreviewerPanel.currentPanel = undefined;
-    logger.info("Previewer panel disposed");
+	private constructor(
+		panel: vscode.WebviewPanel,
+		url: string,
+		fileUrl: vscode.Uri,
+		targetPath: string,
+		private readonly _processManager?: PreviewProcessManager
+	) {
+		this._panel = panel;
+		this._fileUrl = fileUrl;
+		const server = PreviewServer.getInstanceByAssemblyName(targetPath)!;
+		if (!server?.isReady) {
+			// Show loading spinner while waiting for server
+			this._panel.webview.html = this._getLoadingHtml();
+			// Subscribe to onReady event to update webview when ready
+			server.onReady.subscribe(() => {
+				this._update(url);
+			});
+		} else {
+			this._update(url);
+		}
 
-    // Dispose of the current webview panel
-    this._panel.dispose();
+		// Listen for when the panel is disposed
+		// This happens when the user closes the panel or when the panel is closed programmatically
+		this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+	}
 
-    this._processManager?.killPreviewProcess();
-    // Dispose of all disposables (i.e. commands) for the current webview panel
-    while (this._disposables.length) {
-      const disposable = this._disposables.pop();
-      if (disposable) {
-        disposable.dispose();
-      }
-    }
-  }
+	/**
+	 * Cleans up and disposes of webview resources when the webview panel is closed.
+	 */
+	public dispose() {
+		WebPreviewerPanel.currentPanel = undefined;
+		logger.info("Previewer panel disposed");
 
-  private _update(url: string) {
-    this._panel.webview.html = this._getHtmlForWebview(url);
-  }
+		// Dispose of the current webview panel
+		this._panel.dispose();
 
-  private _getHtmlForWebview(url: string): string {
+		this._processManager?.killPreviewProcess();
+		// Dispose of all disposables (i.e. commands) for the current webview panel
+		while (this._disposables.length) {
+			const disposable = this._disposables.pop();
+			if (disposable) {
+				disposable.dispose();
+			}
+		}
+	}
+
+	private _update(url: string) {
+		this._panel.webview.html = this._getHtmlForWebview(url);
+	}
+
+	private _getHtmlForWebview(url: string): string {
 		return `
 <!DOCTYPE html>
 <html>
@@ -222,5 +233,55 @@ export class WebPreviewerPanel {
 	</script>
 </body>
 </html>`;
-  }
+	}
+
+	private _getLoadingHtml(): string {
+		return `
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Loading Previewer</title>
+	<style>
+		html, body {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: var(--vscode-editor-background, #1e1e1e);
+		}
+		.spinner {
+			width: 64px;
+			height: 64px;
+			border: 8px solid #eee;
+			border-top: 8px solid var(--vscode-focusBorder, #0078d4);
+			border-radius: 50%;
+			animation: spin 1s linear infinite;
+			margin-bottom: 24px;
+		}
+		@keyframes spin {
+			0% { transform: rotate(0deg); }
+			100% { transform: rotate(360deg); }
+		}
+		.loading-text {
+			color: var(--vscode-editor-foreground, #fff);
+			font-size: 1.2em;
+			text-align: center;
+			font-family: sans-serif;
+		}
+	</style>
+</head>
+<body>
+	<div>
+		<div class="spinner"></div>
+		<div class="loading-text">Preview is starting&hellip;</div>
+	</div>
+</body>
+</html>
+		`;
+	}
 }

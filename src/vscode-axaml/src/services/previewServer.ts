@@ -23,6 +23,8 @@ export class PreviewServer implements IPreviewServer {
 	public async start() {
 		logger.info(`PreviewServer.start ${this._assemblyName}`);
 
+		this._onReady = new EventDispatcher<IPreviewServer, void>(); // Remove all subscribers
+
 		this._server.listen(this._port, this._host, () =>
 			logger.info(`Preview server listening on port ${this._port}`)
 		);
