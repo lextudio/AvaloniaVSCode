@@ -1,5 +1,11 @@
 # Change Log
 
+## [11.0.50] - 24 August 2025
+
+Highlights:
+
+- Added preview loading indicator.
+
 ## [11.0.49] - 24 August 2025
 
 Highlights:
