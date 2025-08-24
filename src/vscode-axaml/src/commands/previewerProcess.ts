@@ -78,12 +78,13 @@ export class PreviewerProcess implements Command {
 			previewer.on("spawn", () => {
 				util.logger.info(`Previewer process started with args: ${previewerArgs}`);
 				let wsAddress = AppConstants.webSocketAddress(httpPort);
-				let previewerData = {
+				let previewerData: PreviewerData = {
 					file: mainUri,
 					previewerUrl: htmlUrl,
 					assetsAvailable: true,
 					pid: previewer.pid,
 					wsAddress: wsAddress,
+					targetPath: previewParams.targetPath
 				};
 				this._processManager.addProcess(assemblyPath, previewerData);
 				resolve(previewerData);

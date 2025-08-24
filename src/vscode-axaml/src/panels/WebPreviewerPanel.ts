@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import path = require("path");
 import { logger } from "../util/Utilities";
 import { PreviewProcessManager } from "../previewProcessManager";
-import AppConstants from "../util/Constants";
+import { PreviewServer } from "../services/previewServer";
 
 export class WebPreviewerPanel {
   public static currentPanel: WebPreviewerPanel | undefined;
@@ -17,6 +17,7 @@ export class WebPreviewerPanel {
     url: string,
     fileUri: vscode.Uri,
     extensionUri: vscode.Uri,
+    targetPath: string,
     processManager?: PreviewProcessManager,
     previewColumn: vscode.ViewColumn = vscode.ViewColumn.Active
   ) {
@@ -42,6 +43,7 @@ export class WebPreviewerPanel {
       panel,
       url,
 	  fileUri,
+	  targetPath,
       processManager
     );
 
@@ -63,13 +65,20 @@ export class WebPreviewerPanel {
     panel: vscode.WebviewPanel,
     url: string,
 	fileUrl: vscode.Uri,
+	targetPath: string,
     private readonly _processManager?: PreviewProcessManager
   ) {
-    this._panel = panel;
+	this._panel = panel;
 	this._fileUrl = fileUrl;
-
-    // Set the webview's initial html content
-    this._update(url);
+	const server = PreviewServer.getInstanceByAssemblyName(targetPath)!;
+	if (!server?.isReady) {
+		// Subscribe to onReady event to update webview when ready
+		server.onReady.subscribe(() => {
+			this._update(url);
+		});
+	} else {
+		this._update(url);
+	}
 
     // Listen for when the panel is disposed
     // This happens when the user closes the panel or when the panel is closed programmatically

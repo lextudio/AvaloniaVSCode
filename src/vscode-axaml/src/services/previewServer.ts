@@ -41,10 +41,19 @@ export class PreviewServer implements IPreviewServer {
 				logger.info("Start designer session message received.");
 				const pixelFormat = Messages.clientSupportedPixelFormatsMessage();
 				socket.write(pixelFormat);
+				logger.info("Sent client supported pixel formats.");
 
 				// TODO: Investigate this oddity
 				// const renderInfo = Messages.clientRenderInfoMessage();
 				// socket.write(renderInfo);
+			} else if (msg.type === Messages.updateXamlResultMessageId) {
+				logger.info("XAML update completed");
+				this._isReady = true;
+				this._onReady.dispatch((this as unknown) as IPreviewServer);
+			} else if (msg.type === Messages.htmlTransportStartedMessageId) {
+				logger.info("HTML transport started");
+			} else {
+				logger.info("msg: " + msg.type);
 			}
 		});
 
@@ -73,6 +82,10 @@ export class PreviewServer implements IPreviewServer {
 	 */
 	public get isRunning() {
 		return this._server?.listening;
+	}
+
+	public get isReady() {
+		return this._isReady;
 	}
 
 	/**
@@ -111,6 +124,7 @@ export class PreviewServer implements IPreviewServer {
 	}
 
 	updateXaml(fileData: sm.File, xamlText: string): void {
+		this._isReady = false;
 		const updateXamlMessage = Messages.updateXaml(fileData.targetPath, xamlText);
 		this._socket?.write(updateXamlMessage);
 	}
@@ -124,10 +138,16 @@ export class PreviewServer implements IPreviewServer {
 	}
 
 	_onMessage = new EventDispatcher<IPreviewServer, Buffer>();
+	_onReady = new EventDispatcher<IPreviewServer, void>();
+
+	public get onReady(): IEvent<IPreviewServer, void> {
+		return this._onReady.asEvent();
+	}
 
 	_server: net.Server;
 	_socket: net.Socket | undefined;
 	_host = "127.0.0.1";
+	private _isReady = false;
 
 	private static _instance: PreviewServer;
 

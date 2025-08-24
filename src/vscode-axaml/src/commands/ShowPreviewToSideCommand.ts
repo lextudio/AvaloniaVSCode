@@ -78,6 +78,7 @@ export function showPreview(
 			previewerData.previewerUrl!,
 			previewerData.file,
 			context.extensionUri,
+			previewerData.targetPath!,
 			processManager,
 			column
 		);
