@@ -1,5 +1,11 @@
 # Change Log
 
+## [11.0.49] - 24 August 2025
+
+Highlights:
+
+- Event-driven previewer update logic.
+
 ## [11.0.48] - 21 August 2025
 
 Fixes:
